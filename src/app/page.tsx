@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Leaf, ShieldCheck, MapPin, Recycle, Smartphone, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 
 export default function LandingPage() {
   return (
@@ -9,10 +10,7 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-border-subtle">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-              <span className="font-bold text-lg leading-none">E</span>
-            </div>
-            <span className="font-bold tracking-tight text-xl text-text-primary">EcoLoop</span>
+            <Link href="/"><Logo size={30} /></Link>
           </div>
           <div className="hidden md:flex items-center gap-8">
             <Link href="/how-it-works" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</Link>

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
 import { Button } from "@/components/ui/button";
 import { UnauthorizedState } from "@/components/ui/unauthorized-state";
+import { Logo } from "@/components/ui/logo";
 
 export function ResidentLayout({ children }: { children: React.ReactNode }) {
   const { currentUser, logout } = useDemoStore();
@@ -40,10 +41,7 @@ export function ResidentLayout({ children }: { children: React.ReactNode }) {
         <aside className="hidden md:flex flex-col w-[260px] border-r border-border-subtle bg-surface min-h-screen sticky top-0 shadow-[1px_0_10px_rgba(0,0,0,0.02)] z-30">
           <div className="p-6 border-b border-border-subtle flex items-center justify-between">
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                <span className="font-bold text-lg leading-none">E</span>
-              </div>
-              <span className="font-bold tracking-tight text-xl text-text-primary">EcoLoop</span>
+              <Logo size={32} />
             </Link>
           </div>
           
@@ -94,10 +92,7 @@ export function ResidentLayout({ children }: { children: React.ReactNode }) {
           {/* Mobile Header (Safe Area Aware) */}
           <header className="md:hidden bg-surface border-b border-border-subtle p-4 flex items-center justify-between sticky top-0 z-20 pt-[max(env(safe-area-inset-top),16px)] shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                <span className="font-bold text-sm leading-none">E</span>
-              </div>
-              <span className="font-semibold text-[17px] tracking-tight text-text-primary">EcoLoop</span>
+              <Logo size={26} />
             </div>
             <div className="flex items-center gap-3">
               <span className="text-[11px] font-medium px-2 py-0.5 bg-surface-muted text-text-secondary rounded-full uppercase tracking-wider">Demo</span>
