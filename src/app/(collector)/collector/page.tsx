@@ -9,29 +9,22 @@ import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
 
 export default function CollectorDashboard() {
-  const { currentUser, pickups, updatePickupStatus, addTransaction, updatePoints } = useDemoStore();
+  const { currentUser, pickups, updatePickupStatus, addEcoPoints } = useDemoStore();
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
 
   if (!currentUser) return null;
 
-  const activeRoute = pickups.filter(p => p.collector_id === currentUser.id && (p.status === 'scheduled' || p.status === 'in_progress'));
+  const activeRoute = pickups.filter(p => p.collector_id === currentUser.id && (p.status === 'Collector Assigned' || p.status === 'Collector En Route'));
 
   const handleStatusUpdate = (pickupId: string, newStatus: any, residentId: string) => {
     setIsUpdating(pickupId);
     setTimeout(() => {
       updatePickupStatus(pickupId, newStatus);
       
-      if (newStatus === 'completed') {
+      if (newStatus === 'Collected') {
         const pointsAwarded = 50;
-        addTransaction({
-          user_id: residentId,
-          amount: pointsAwarded,
-          type: 'earned',
-          description: 'Successful waste pickup',
-          points: pointsAwarded
-        });
-        updatePoints(residentId, pointsAwarded);
-        updatePoints(currentUser.id, 10);
+        addEcoPoints(residentId, pointsAwarded, 'Successful waste pickup');
+        addEcoPoints(currentUser.id, 10, 'Pickup completed');
       }
       setIsUpdating(null);
     }, 600);
@@ -88,7 +81,7 @@ export default function CollectorDashboard() {
                     <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-muted text-[11px] font-semibold text-text-secondary mb-2 uppercase tracking-wider">
                       {pickup.waste_type.replace('_', ' ')} • {pickup.quantity_category}
                     </div>
-                    <h3 className="text-lg font-bold text-text-primary tracking-tight mb-1">{pickup.location}</h3>
+                    <h3 className="text-lg font-bold text-text-primary tracking-tight mb-1">{pickup.address || pickup.community}</h3>
                     <p className="text-[15px] text-text-secondary flex items-center gap-1.5">
                       <MapPin className="w-4 h-4" /> Drop-off Point Alpha
                     </p>
@@ -96,9 +89,9 @@ export default function CollectorDashboard() {
                 </div>
 
                 <div className="flex sm:flex-col items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0 pt-4 sm:pt-0 border-t sm:border-0 border-border-subtle">
-                  {pickup.status === 'scheduled' ? (
+                  {pickup.status === 'Collector Assigned' ? (
                     <Button 
-                      onClick={() => handleStatusUpdate(pickup.id, 'in_progress', pickup.resident_id)}
+                      onClick={() => handleStatusUpdate(pickup.id, 'Collector En Route', pickup.user_id)}
                       disabled={isUpdating === pickup.id}
                       className="w-full sm:w-40 rounded-xl bg-text-primary hover:bg-black text-white font-medium shadow-sm h-12"
                     >
@@ -106,7 +99,7 @@ export default function CollectorDashboard() {
                     </Button>
                   ) : (
                     <Button 
-                      onClick={() => handleStatusUpdate(pickup.id, 'completed', pickup.resident_id)}
+                      onClick={() => handleStatusUpdate(pickup.id, 'Collected', pickup.user_id)}
                       disabled={isUpdating === pickup.id}
                       className="w-full sm:w-40 rounded-xl bg-success hover:bg-success/90 text-white font-medium shadow-sm h-12"
                     >

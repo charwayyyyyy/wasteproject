@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import { useDemoStore } from "@/store/demo-store";
 import { useState } from "react";
 import { MapPin, Navigation, ListTodo } from "lucide-react";
@@ -13,17 +14,13 @@ export default function CollectorRequests() {
   if (!currentUser) return null;
 
   // Find pickups that are pending in the collector's area
-  const availableRequests = pickups.filter(p => 
-    p.status === 'pending' && 
-    p.location.includes(currentUser.area)
-  );
+  const availableRequests = pickups.filter(p => p.status === 'Submitted');
 
-  const handleAcceptJob = (pickupId: string) => {
-    setIsUpdating(pickupId);
+  const handleClaim = (id: string) => {
+    setIsUpdating(id);
     setTimeout(() => {
-      updatePickupStatus(pickupId, 'scheduled');
-      // In a real app, we would also set collector_id here. 
-      // Our demo store update logic might need to be tweaked, but for UI purposes:
+      updatePickupStatus(id, 'Collector Assigned', currentUser.id);
+      toast.success("Pickup claimed successfully! Added to your active route.");
       setIsUpdating(null);
     }, 600);
   };
@@ -46,8 +43,8 @@ export default function CollectorRequests() {
                   <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-information-background text-[11px] font-semibold text-information mb-2 uppercase tracking-wider">
                     {pickup.waste_type.replace('_', ' ')} • {pickup.quantity_category}
                   </div>
-                  <h3 className="text-xl font-bold text-text-primary tracking-tight mb-2">{pickup.location}</h3>
-                  <div className="flex items-center gap-4 text-[14px] text-text-secondary">
+                  <h3 className="font-bold text-lg text-text-primary tracking-tight mb-1">{pickup.address || pickup.community}</h3>
+                  <div className="flex items-center text-[15px] text-text-secondary gap-4">
                     <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> 2.4 km away</span>
                     <span className="flex items-center gap-1.5"><Navigation className="w-4 h-4" /> Drop at Alpha Point</span>
                   </div>
@@ -55,7 +52,7 @@ export default function CollectorRequests() {
 
                 <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-0 border-border-subtle pt-4 sm:pt-0 mt-2 sm:mt-0">
                   <Button 
-                    onClick={() => handleAcceptJob(pickup.id)}
+                    onClick={() => handleClaim(pickup.id)}
                     disabled={isUpdating === pickup.id}
                     className="w-full sm:w-32 rounded-xl bg-success hover:bg-success/90 text-white font-medium shadow-sm h-12"
                   >

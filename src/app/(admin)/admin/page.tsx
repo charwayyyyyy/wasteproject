@@ -7,16 +7,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
-  const { pickups, reports, users } = useDemoStore();
+  const { pickups, reports, profiles } = useDemoStore();
 
   const totalPickups = pickups.length;
-  const completedPickups = pickups.filter(p => p.status === 'completed').length;
+  const completedPickups = pickups.filter(p => p.status === 'Collected').length;
   
-  const activeReports = reports.filter(r => r.status !== 'cleared');
-  const criticalReports = reports.filter(r => r.severity === 'high' && r.status !== 'cleared');
+  const activeReports = reports.filter(r => r.status !== 'Cleared');
+  const criticalReports = reports.filter(r => r.severity === 'High' && r.status !== 'Cleared');
 
-  const totalUsers = users.filter(u => u.role !== 'admin').length;
-  const activeCollectors = users.filter(u => u.role === 'collector').length;
+  const totalUsers = profiles.filter(u => u.role !== 'admin').length;
+  const activeCollectors = profiles.filter(u => u.role === 'collector').length;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20 md:pb-0">
@@ -107,11 +107,11 @@ export default function AdminDashboard() {
               <div key={pickup.id} className="p-4 flex items-center justify-between">
                 <div>
                   <p className="font-semibold text-[15px] text-text-primary capitalize">{pickup.waste_type.replace('_', ' ')}</p>
-                  <p className="text-[13px] text-text-secondary">{pickup.location}</p>
+                  <p className="text-[13px] text-text-secondary">{pickup.address || pickup.community}</p>
                 </div>
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
-                  pickup.status === 'completed' ? 'bg-success-background text-success' : 
-                  pickup.status === 'in_progress' ? 'bg-information-background text-information' : 
+                  pickup.status === 'Collected' ? 'bg-success-background text-success' : 
+                  pickup.status === 'Collector En Route' ? 'bg-information-background text-information' : 
                   'bg-warning-background text-warning'
                 }`}>
                   {pickup.status.replace('_', ' ')}

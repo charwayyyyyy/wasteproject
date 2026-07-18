@@ -8,15 +8,16 @@ import { format, parseISO } from "date-fns";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export default function ResidentDashboard() {
-  const { currentUser, pickups, reports } = useDemoStore();
+  const { currentUser, pickups, reports, transactions } = useDemoStore();
 
-  const userPickups = pickups.filter(p => p.resident_id === currentUser?.id);
-  const activePickups = userPickups.filter(p => p.status === 'pending' || p.status === 'scheduled');
+  const userPickups = pickups.filter(p => p.user_id === currentUser?.id);
+  const activePickups = userPickups.filter(p => p.status === 'Submitted' || p.status === 'Collector Assigned');
   
   const userReports = reports.filter(r => r.reporter_id === currentUser?.id);
-  const activeReports = userReports.filter(r => r.status !== 'cleared');
+  const activeReports = userReports.filter(r => r.status !== 'Cleared');
 
-  const nextPickup = activePickups.sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime())[0];
+  const nextPickup = activePickups.sort((a, b) => new Date(a.preferred_date).getTime() - new Date(b.preferred_date).getTime())[0];
+  const userPoints = transactions.filter(tx => tx.user_id === currentUser?.id).reduce((sum, tx) => sum + tx.points, 0);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20 md:pb-0">
@@ -38,7 +39,7 @@ export default function ResidentDashboard() {
           </div>
           <div>
             <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">EcoPoints</p>
-            <p className="font-bold text-lg text-text-primary leading-tight">{currentUser?.points}</p>
+            <p className="font-bold text-lg text-text-primary leading-tight">{userPoints}</p>
           </div>
         </div>
       </div>
@@ -55,7 +56,7 @@ export default function ResidentDashboard() {
             
             <div className="relative z-10">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-medium mb-4">
-                <Clock className="w-3.5 h-3.5" /> Scheduled for {format(parseISO(nextPickup.scheduled_date), "MMM d")}
+                <Clock className="w-3.5 h-3.5" /> Scheduled for {format(parseISO(nextPickup.preferred_date), "MMM d")}
               </div>
               
               <h3 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">Pickup Requested</h3>
@@ -67,7 +68,7 @@ export default function ResidentDashboard() {
                 <Button className="rounded-xl bg-white text-primary hover:bg-surface-muted font-medium" asChild>
                   <Link href={`/pickups/${nextPickup.id}`}>View Details</Link>
                 </Button>
-                {nextPickup.status === 'scheduled' && (
+                {nextPickup.status === 'Collector Assigned' && (
                   <span className="text-sm font-medium flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-white" /> Collector assigned
                   </span>

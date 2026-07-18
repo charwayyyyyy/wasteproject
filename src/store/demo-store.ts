@@ -9,7 +9,8 @@ import {
   Notification,
   Role,
   PickupStatus,
-  ReportStatus
+  ReportStatus,
+  MaterialStatus
 } from '@/types';
 import { 
   demoProfiles, 
@@ -122,7 +123,7 @@ export const useDemoStore = create<DemoState>((set) => ({
       if (m.id === id) {
         return {
           ...m,
-          status: 'Claimed',
+          status: 'Claimed' as MaterialStatus,
           recycling_partner_id: recyclerId,
           claimed_at: new Date().toISOString()
         };

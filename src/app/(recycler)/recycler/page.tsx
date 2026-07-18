@@ -13,7 +13,7 @@ export default function RecyclerDashboard() {
   if (!currentUser) return null;
 
   // Recyclers see completed pickups as "Marketplace Inventory"
-  const availableMaterials = pickups.filter(p => p.status === 'completed');
+  const availableMaterials = pickups.filter(p => p.status === 'Collected');
 
   const handleClaim = (pickupId: string) => {
     setIsUpdating(pickupId);
@@ -63,7 +63,7 @@ export default function RecyclerDashboard() {
                   {material.waste_type.replace('_', ' ')} • {material.quantity_category}
                 </h3>
                 <p className="text-[14px] text-text-secondary flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-text-tertiary" /> Available at {material.location.split(',')[0]} Hub
+                  <MapPin className="w-4 h-4 text-text-tertiary" /> Available at {(material.address || material.community).split(',')[0]} Hub
                 </p>
               </div>
               <div className="p-5 bg-background-secondary mt-auto">

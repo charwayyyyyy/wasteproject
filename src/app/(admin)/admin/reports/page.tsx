@@ -56,7 +56,7 @@ export default function AdminReportsPage() {
                     </div>
                     <Badge variant="outline" className={
                       report.status === 'Cleared' ? 'bg-green-100 text-green-800 border-green-200' : 
-                      report.status === 'In Progress' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                      ['Under Review', 'Verified', 'Response Scheduled'].includes(report.status) ? 'bg-amber-100 text-amber-800 border-amber-200' :
                       'bg-blue-100 text-blue-800 border-blue-200'
                     }>
                       {report.status}
@@ -83,15 +83,15 @@ export default function AdminReportsPage() {
                 <div className="bg-slate-50 p-4 md:w-48 flex flex-col justify-center gap-2 border-t md:border-t-0 md:border-l">
                   {report.status !== 'Cleared' && (
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger>
                         <Button variant="outline" className="w-full">
                           Update Status <MoreVertical className="ml-2 h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {report.status === 'Reported' && (
-                          <DropdownMenuItem onClick={() => handleUpdateStatus(report.id, 'In Progress')}>
-                            Mark In Progress
+                        {report.status === 'Submitted' && (
+                          <DropdownMenuItem onClick={() => handleUpdateStatus(report.id, 'Under Review')}>
+                            Mark Under Review
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuItem onClick={() => handleUpdateStatus(report.id, 'Cleared')}>

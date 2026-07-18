@@ -36,7 +36,7 @@ export default function ReportDetail() {
 
   const getStatusColor = (status: string) => {
     if (status === 'Cleared') return 'bg-green-100 text-green-800 border-green-200';
-    if (status === 'In Progress') return 'bg-amber-100 text-amber-800 border-amber-200';
+    if (['Under Review', 'Verified', 'Response Scheduled'].includes(status)) return 'bg-amber-100 text-amber-800 border-amber-200';
     return 'bg-blue-100 text-blue-800 border-blue-200';
   };
 
@@ -111,7 +111,7 @@ export default function ReportDetail() {
         </Card>
       )}
 
-      {report.status === 'In Progress' && (
+      {['Under Review', 'Verified', 'Response Scheduled'].includes(report.status) && (
         <Card className="border-0 shadow-sm bg-amber-50 border-amber-100">
           <CardHeader>
             <CardTitle className="text-amber-800 flex items-center gap-2">
@@ -126,7 +126,7 @@ export default function ReportDetail() {
         </Card>
       )}
 
-      {report.status === 'Reported' && (
+      {report.status === 'Submitted' && (
         <Card className="border-0 shadow-sm">
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground">

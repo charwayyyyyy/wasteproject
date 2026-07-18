@@ -49,11 +49,12 @@ export default function NewPickup() {
     // Simulate network delay for polish
     setTimeout(() => {
       addPickup({
-        resident_id: currentUser.id,
+        user_id: currentUser.id,
         waste_type: wasteType,
         quantity_category: quantity,
-        location: `${currentUser.area}, ${currentUser.community}`,
-        status: 'pending',
+        address: currentUser.area,
+        community: currentUser.community,
+        status: 'Submitted',
         scheduled_date: scheduledDate || new Date().toISOString().split('T')[0],
         notes
       });
