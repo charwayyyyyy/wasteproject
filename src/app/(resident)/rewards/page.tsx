@@ -2,7 +2,7 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { format, parseISO } from "date-fns";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Gift, ArrowUpRight, ArrowDownRight, Award, Trophy, Info } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";

@@ -2,8 +2,8 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { format, parseISO } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, AlertTriangle, CheckCircle2, MoreVertical } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { MapPin, CheckCircle2, MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";

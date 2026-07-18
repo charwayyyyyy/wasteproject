@@ -5,10 +5,7 @@ import {
   DisposalPoint, 
   EcoPointTransaction, 
   RecyclableMaterial, 
-  Notification,
-  Role,
-  PickupStatus,
-  ReportStatus
+  Notification
 } from '@/types';
 import { addDays, subDays } from 'date-fns';
 

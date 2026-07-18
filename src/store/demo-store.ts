@@ -7,7 +7,6 @@ import {
   EcoPointTransaction, 
   RecyclableMaterial, 
   Notification,
-  Role,
   PickupStatus,
   ReportStatus,
   MaterialStatus

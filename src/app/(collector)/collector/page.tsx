@@ -2,8 +2,7 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { useState } from "react";
-import { format, parseISO } from "date-fns";
-import { MapPin, Navigation, Phone, CheckCircle2, MoreVertical, Truck } from "lucide-react";
+import { MapPin, Phone, CheckCircle2, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
@@ -16,7 +15,7 @@ export default function CollectorDashboard() {
 
   const activeRoute = pickups.filter(p => p.collector_id === currentUser.id && (p.status === 'Collector Assigned' || p.status === 'Collector En Route'));
 
-  const handleStatusUpdate = (pickupId: string, newStatus: any, residentId: string) => {
+  const handleStatusUpdate = (pickupId: string, newStatus: "Collector Assigned" | "Collector En Route" | "Collected", residentId: string) => {
     setIsUpdating(pickupId);
     setTimeout(() => {
       updatePickupStatus(pickupId, newStatus);

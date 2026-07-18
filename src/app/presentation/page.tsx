@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CheckCircle2, Navigation } from "lucide-react";
+import { ArrowLeft, ArrowRight, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function PresentationPage() {
@@ -26,13 +26,17 @@ export default function PresentationPage() {
           {/* Slide 1: The Problem */}
           <section className="min-h-[60vh] flex flex-col justify-center">
             <h2 className="text-success font-bold tracking-widest uppercase text-sm mb-4">01. The Core Problem</h2>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1] mb-8">
-              Waste isn't the problem.<br />
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+              Waste isn&apos;t the problem.<br />
               <span className="text-white/40">Irregular collection is.</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/70 max-w-3xl leading-relaxed">
-              Case 13 revealed that people <em>want</em> to dispose of waste responsibly. The real failure is a system that doesn't provide a reliable, visible, or rewarding way to do so.
+            <p className="text-text-secondary text-lg mb-8 max-w-lg leading-relaxed">
+              We&apos;re not just managing waste; we&apos;re building a closed-loop economy where nothing is truly wasted.
             </p>
+
+            <blockquote className="border-l-4 border-success pl-4 italic text-lg text-text-tertiary mb-10 max-w-lg">
+              &quot;How Might We give households a reliable, rewarding way to dispose of waste?&quot;
+            </blockquote>
           </section>
 
           {/* Slide 2: The Solution */}
@@ -80,7 +84,7 @@ export default function PresentationPage() {
               Experience the prototype.
             </h1>
             <p className="text-xl text-white/70 max-w-2xl mb-12">
-              We built a fully functional web application to prove this coordination works. Let's step into the shoes of our community.
+              We built a fully functional web application to prove this coordination works. Let&apos;s step into the shoes of our community.
             </p>
             <Button size="lg" className="h-16 px-10 rounded-full text-lg font-semibold bg-success hover:bg-success/90 text-white shadow-lg hover:shadow-success/20 hover:-translate-y-1 transition-all" asChild>
               <Link href="/login">

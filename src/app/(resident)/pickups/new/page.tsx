@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useDemoStore } from "@/store/demo-store";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle2, ChevronRight, Package, Box, MapPin, CalendarClock, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const WASTE_TYPES = [
@@ -21,7 +20,7 @@ const QUANTITIES = [
   { id: 'large', label: 'Large (Bulk/Furniture)' },
 ];
 
-function LeafIcon(props: any) {
+function LeafIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M11 20A7 7 0 0 1 14 6h7v7a7 7 0 0 1-7 7Z"/><path d="M11 20a7 7 0 0 0 7-7v-7"/><path d="M11 20a7 7 0 0 1-7-7v-7h7Z"/>
@@ -54,8 +53,10 @@ export default function NewPickup() {
         quantity_category: quantity,
         address: currentUser.area,
         community: currentUser.community,
+        area: currentUser.area,
         status: 'Submitted',
-        scheduled_date: scheduledDate || new Date().toISOString().split('T')[0],
+        priority: 2,
+        preferred_date: scheduledDate || new Date().toISOString().split('T')[0],
         notes
       });
       router.push('/pickups?success=true');

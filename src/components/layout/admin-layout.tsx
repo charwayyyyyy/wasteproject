@@ -4,7 +4,7 @@ import { useDemoStore } from "@/store/demo-store";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { BarChart3, AlertTriangle, Users, LogOut, FileText, CalendarClock } from "lucide-react";
+import { BarChart3, AlertTriangle, Users, LogOut, CalendarClock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
 

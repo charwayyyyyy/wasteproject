@@ -4,7 +4,7 @@ import { useDemoStore } from "@/store/demo-store";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Home, CalendarClock, AlertTriangle, Gift, User, LogOut, Plus } from "lucide-react";
+import { Home, CalendarClock, AlertTriangle, Gift, LogOut, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
 import { Button } from "@/components/ui/button";

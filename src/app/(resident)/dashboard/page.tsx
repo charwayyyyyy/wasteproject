@@ -29,7 +29,7 @@ export default function ResidentDashboard() {
             Hello, {currentUser?.full_name.split(' ')[0]} 👋
           </h1>
           <p className="text-text-secondary text-[15px]">
-            Here is what's happening with your waste collection.
+            Here is what&apos;s happening with your waste collection.
           </p>
         </div>
         
@@ -61,7 +61,7 @@ export default function ResidentDashboard() {
               
               <h3 className="text-2xl md:text-3xl font-bold mb-2 tracking-tight">Pickup Requested</h3>
               <p className="text-primary-foreground/80 text-[15px] mb-8 max-w-md capitalize">
-                We'll collect your {nextPickup.waste_type.replace('_', ' ')} waste. A collector will be assigned to your route shortly.
+                We&apos;ll collect your {nextPickup.waste_type.replace('_', ' ')} waste. A collector will be assigned to your route shortly.
               </p>
               
               <div className="flex items-center gap-3">

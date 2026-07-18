@@ -1,7 +1,7 @@
 "use client";
 
 import { useDemoStore } from "@/store/demo-store";
-import { Recycle, Navigation, MapPin, CheckCircle2, TrendingUp, DollarSign } from "lucide-react";
+import { Recycle, MapPin, CheckCircle2, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -22,7 +22,7 @@ export default function RecyclerDashboard() {
       // For the demo, we'll mark it as 'claimed' or similar, but since we don't have a 'claimed' status 
       // in our simple demo state machine, we can just remove it from 'completed' view by marking it 'archived'.
       // To not break other views, let's just pretend for the demo interaction.
-      updatePickupStatus(pickupId, 'archived' as any);
+      updatePickupStatus(pickupId, 'Collected');
       setIsUpdating(null);
     }, 800);
   };

@@ -4,7 +4,7 @@ import { useDemoStore } from "@/store/demo-store";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { ArrowLeft, MapPin, Clock, Truck, CheckCircle2, Package, Calendar, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MapPin, Package, Calendar, AlertTriangle } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

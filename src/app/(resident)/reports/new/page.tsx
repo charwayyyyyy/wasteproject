@@ -1,7 +1,6 @@
 "use client";
 
 import { useDemoStore } from "@/store/demo-store";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
@@ -14,7 +13,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 export default function NewReportPage() {
   const { currentUser, addReport } = useDemoStore();
-  const router = useRouter();
   
   const [location, setLocation] = useState("");
   const [wasteType, setWasteType] = useState("");
