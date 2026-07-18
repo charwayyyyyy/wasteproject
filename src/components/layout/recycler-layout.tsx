@@ -2,24 +2,24 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 import Link from "next/link";
 import { Recycle, Package, LogOut, CheckSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
+import { UnauthorizedState } from "@/components/ui/unauthorized-state";
 
 export function RecyclerLayout({ children }: { children: React.ReactNode }) {
   const { currentUser, logout } = useDemoStore();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!currentUser || currentUser.role !== 'recycler') {
-      router.push('/login');
-    }
-  }, [currentUser, router]);
+
 
   if (!currentUser) return null;
+
+  if (currentUser.role !== 'recycler') {
+    return <UnauthorizedState requiredRole="recycler" />;
+  }
 
   const handleLogout = () => {
     logout();

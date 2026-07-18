@@ -2,25 +2,23 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 import Link from "next/link";
-import { Home, CalendarClock, AlertTriangle, Gift, LogOut, Plus } from "lucide-react";
+import { Home, CalendarClock, AlertTriangle, Gift, LogOut, UserCircle, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
 import { Button } from "@/components/ui/button";
+import { UnauthorizedState } from "@/components/ui/unauthorized-state";
 
 export function ResidentLayout({ children }: { children: React.ReactNode }) {
   const { currentUser, logout } = useDemoStore();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!currentUser || currentUser.role !== 'resident') {
-      router.push('/login');
-    }
-  }, [currentUser, router]);
-
   if (!currentUser) return null;
+
+  if (currentUser.role !== 'resident') {
+    return <UnauthorizedState requiredRole="resident" />;
+  }
 
   const handleLogout = () => {
     logout();
@@ -32,6 +30,7 @@ export function ResidentLayout({ children }: { children: React.ReactNode }) {
     { name: 'Pickups', href: '/pickups', icon: CalendarClock },
     { name: 'Report', href: '/reports', icon: AlertTriangle },
     { name: 'Rewards', href: '/rewards', icon: Gift },
+    { name: 'Profile', href: '/profile', icon: UserCircle },
   ];
 
   return (

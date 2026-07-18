@@ -52,6 +52,8 @@ interface DemoState {
   reassignCollector: (pickupId: string, newCollectorId: string, reason: string) => { success: boolean; message: string };
   updateCollectorAvailability: (collectorId: string, status: 'Available' | 'On Route' | 'At Capacity' | 'Offline') => { success: boolean; message: string };
 
+  updateProfile: (userId: string, updates: Partial<Profile>) => { success: boolean; message: string };
+
   resetDemo: () => void;
 }
 
@@ -83,8 +85,17 @@ export const useDemoStore = create<DemoState>((set) => ({
   }),
 
   updatePickupStatus: (id, status, collectorId) => set((state) => {
+    let pointsAwarded = false;
+    let userId = '';
+
     const updatedPickups = state.pickups.map(p => {
       if (p.id === id) {
+        // Prevent re-awarding if already collected
+        if (status === 'Collected' && p.status !== 'Collected') {
+          pointsAwarded = true;
+          userId = p.user_id;
+        }
+
         return { 
           ...p, 
           status, 
@@ -95,6 +106,32 @@ export const useDemoStore = create<DemoState>((set) => ({
       }
       return p;
     });
+
+    if (pointsAwarded && userId) {
+      // Create a transaction
+      const newTx = {
+        id: `tx-${Date.now()}`,
+        user_id: userId,
+        points: 50, // Standard reward for a pickup
+        transaction_type: 'Earned' as const,
+        description: 'Completed Waste Pickup',
+        created_at: new Date().toISOString()
+      };
+      
+      // Update the user profile balance
+      const updatedProfiles = state.profiles.map(prof => 
+        prof.id === userId 
+          ? { ...prof, eco_points_balance: (prof.eco_points_balance || 0) + 50 }
+          : prof
+      );
+
+      return { 
+        pickups: updatedPickups,
+        transactions: [newTx, ...state.transactions],
+        profiles: updatedProfiles
+      };
+    }
+
     return { pickups: updatedPickups };
   }),
 
@@ -258,6 +295,29 @@ export const useDemoStore = create<DemoState>((set) => ({
       
       result = { success: true, message: 'Availability updated' };
       return { profiles: updatedProfiles };
+    });
+    return result;
+  },
+
+  updateProfile: (userId, updates) => {
+    let result = { success: false, message: 'User not found' };
+    set((state) => {
+      const userIndex = state.profiles.findIndex(p => p.id === userId);
+      if (userIndex === -1) return state;
+      
+      const updatedProfiles = [...state.profiles];
+      updatedProfiles[userIndex] = {
+        ...updatedProfiles[userIndex],
+        ...updates
+      };
+      
+      const isCurrentUser = state.currentUser?.id === userId;
+      
+      result = { success: true, message: 'Profile updated successfully' };
+      return { 
+        profiles: updatedProfiles,
+        currentUser: isCurrentUser ? updatedProfiles[userIndex] : state.currentUser
+      };
     });
     return result;
   },

@@ -11,6 +11,7 @@ export type Profile = {
   address?: string;
   business_name?: string;
   status?: 'Available' | 'On Route' | 'At Capacity' | 'Offline';
+  eco_points_balance?: number;
   created_at: string;
   updated_at: string;
 };

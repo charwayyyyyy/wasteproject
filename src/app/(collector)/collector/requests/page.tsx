@@ -6,6 +6,7 @@ import { useState } from "react";
 import { MapPin, Navigation, ListTodo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import Link from "next/link";
 
 export default function CollectorRequests() {
   const { currentUser, pickups, updatePickupStatus } = useDemoStore();
@@ -51,6 +52,9 @@ export default function CollectorRequests() {
                 </div>
 
                 <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-0 border-border-subtle pt-4 sm:pt-0 mt-2 sm:mt-0">
+                  <Link href={`/collector/requests/${pickup.id}`} className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full sm:w-32 rounded-xl h-12 font-medium">Details</Button>
+                  </Link>
                   <Button 
                     onClick={() => handleClaim(pickup.id)}
                     disabled={isUpdating === pickup.id}

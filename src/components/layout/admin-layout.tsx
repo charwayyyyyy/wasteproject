@@ -2,24 +2,22 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 import Link from "next/link";
-import { BarChart3, AlertTriangle, Users, LogOut, CalendarClock } from "lucide-react";
+import { BarChart3, AlertTriangle, Users, LogOut, CalendarClock, LineChart, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HydrationGate } from "../providers/hydration-gate";
+import { UnauthorizedState } from "@/components/ui/unauthorized-state";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const { currentUser, logout } = useDemoStore();
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!currentUser || currentUser.role !== 'admin') {
-      router.push('/login');
-    }
-  }, [currentUser, router]);
-
   if (!currentUser) return null;
+
+  if (currentUser.role !== 'admin') {
+    return <UnauthorizedState requiredRole="admin" />;
+  }
 
   const handleLogout = () => {
     logout();
@@ -31,6 +29,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     { name: 'Pickups', href: '/admin/pickups', icon: CalendarClock },
     { name: 'Reports', href: '/admin/reports', icon: AlertTriangle },
     { name: 'Collectors', href: '/admin/collectors', icon: Users },
+    { name: 'Analytics', href: '/admin/analytics', icon: LineChart },
+    { name: 'Feedback', href: '/admin/feedback', icon: MessageSquare },
   ];
 
   return (
