@@ -42,9 +42,15 @@ interface DemoState {
   addReport: (report: Omit<WasteReport, 'id' | 'created_at' | 'updated_at'>) => void;
   updateReportStatus: (id: string, status: ReportStatus) => void;
 
-  claimMaterial: (id: string, recyclerId: string) => void;
+  claimMaterial: (id: string, recyclerId: string) => { success: boolean; message: string };
+  completeMaterialClaim: (materialId: string, recyclerId: string, details: { quantity?: string; date?: string; note?: string }) => { success: boolean; message: string };
 
   addEcoPoints: (userId: string, points: number, description: string) => void;
+
+  // New Admin Actions
+  assignCollectorToPickup: (pickupId: string, collectorId: string) => { success: boolean; message: string };
+  reassignCollector: (pickupId: string, newCollectorId: string, reason: string) => { success: boolean; message: string };
+  updateCollectorAvailability: (collectorId: string, status: 'Available' | 'On Route' | 'At Capacity' | 'Offline') => { success: boolean; message: string };
 
   resetDemo: () => void;
 }
@@ -117,20 +123,55 @@ export const useDemoStore = create<DemoState>((set) => ({
     return { reports: updatedReports };
   }),
 
-  claimMaterial: (id, recyclerId) => set((state) => {
-    const updatedMaterials = state.materials.map(m => {
-      if (m.id === id) {
-        return {
-          ...m,
-          status: 'Claimed' as MaterialStatus,
-          recycling_partner_id: recyclerId,
-          claimed_at: new Date().toISOString()
-        };
+  claimMaterial: (id, recyclerId) => {
+    let result = { success: false, message: 'Material not found or unavailable' };
+    set((state) => {
+      const material = state.materials.find(m => m.id === id);
+      if (!material || material.status !== 'Available') {
+        return state;
       }
-      return m;
+      
+      const updatedMaterials = state.materials.map(m => {
+        if (m.id === id) {
+          return {
+            ...m,
+            status: 'Claimed' as MaterialStatus,
+            recycling_partner_id: recyclerId,
+            claimed_at: new Date().toISOString()
+          };
+        }
+        return m;
+      });
+      result = { success: true, message: 'Material successfully claimed' };
+      return { materials: updatedMaterials };
     });
-    return { materials: updatedMaterials };
-  }),
+    return result;
+  },
+
+  completeMaterialClaim: (materialId, recyclerId, details) => {
+    let result = { success: false, message: 'Material claim not found or you do not have permission' };
+    set((state) => {
+      const material = state.materials.find(m => m.id === materialId);
+      if (!material || material.status !== 'Claimed' || material.recycling_partner_id !== recyclerId) {
+        return state;
+      }
+      
+      const updatedMaterials = state.materials.map(m => {
+        if (m.id === materialId) {
+          return {
+            ...m,
+            status: 'Collected' as MaterialStatus,
+            collected_at: details.date || new Date().toISOString(),
+            approximate_quantity: details.quantity || m.approximate_quantity
+          };
+        }
+        return m;
+      });
+      result = { success: true, message: 'Material successfully marked as collected' };
+      return { materials: updatedMaterials };
+    });
+    return result;
+  },
 
   addEcoPoints: (userId, points, description) => set((state) => {
     const newTx: EcoPointTransaction = {
@@ -143,6 +184,83 @@ export const useDemoStore = create<DemoState>((set) => ({
     };
     return { transactions: [newTx, ...state.transactions] };
   }),
+
+  assignCollectorToPickup: (pickupId, collectorId) => {
+    let result = { success: false, message: 'Pickup or collector not found' };
+    set((state) => {
+      const pickup = state.pickups.find(p => p.id === pickupId);
+      const collector = state.profiles.find(p => p.id === collectorId && p.role === 'collector');
+      
+      if (!pickup || !collector) return state;
+      if (pickup.status !== 'Submitted' && pickup.status !== 'Awaiting Assignment') {
+        result = { success: false, message: 'Pickup is not in an assignable state' };
+        return state;
+      }
+      
+      const updatedPickups = state.pickups.map(p => {
+        if (p.id === pickupId) {
+          return {
+            ...p,
+            status: 'Collector Assigned' as PickupStatus,
+            collector_id: collectorId,
+            updated_at: new Date().toISOString()
+          };
+        }
+        return p;
+      });
+      result = { success: true, message: 'Collector successfully assigned' };
+      return { pickups: updatedPickups };
+    });
+    return result;
+  },
+
+  reassignCollector: (pickupId, newCollectorId, _reason) => {
+    let result = { success: false, message: 'Pickup or new collector not found' };
+    set((state) => {
+      const pickup = state.pickups.find(p => p.id === pickupId);
+      const collector = state.profiles.find(p => p.id === newCollectorId && p.role === 'collector');
+      
+      if (!pickup || !collector) return state;
+      if (!pickup.collector_id) {
+        result = { success: false, message: 'Pickup is not currently assigned' };
+        return state;
+      }
+      
+      const updatedPickups = state.pickups.map(p => {
+        if (p.id === pickupId) {
+          return {
+            ...p,
+            collector_id: newCollectorId,
+            updated_at: new Date().toISOString()
+          };
+        }
+        return p;
+      });
+      result = { success: true, message: 'Collector successfully reassigned' };
+      return { pickups: updatedPickups };
+    });
+    return result;
+  },
+
+  updateCollectorAvailability: (collectorId, status) => {
+    let result = { success: false, message: 'Collector not found' };
+    set((state) => {
+      // In the real app, we would update the profile or a separate collector_status table.
+      // For demo purposes, we will update the profile's status if they are a collector.
+      const collectorIndex = state.profiles.findIndex(p => p.id === collectorId && p.role === 'collector');
+      if (collectorIndex === -1) return state;
+      
+      const updatedProfiles = [...state.profiles];
+      updatedProfiles[collectorIndex] = {
+        ...updatedProfiles[collectorIndex],
+        status: status // Assuming 'status' field exists or we can just append it for demo
+      };
+      
+      result = { success: true, message: 'Availability updated' };
+      return { profiles: updatedProfiles };
+    });
+    return result;
+  },
 
   resetDemo: () => set({
     currentUser: null,

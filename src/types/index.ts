@@ -10,6 +10,7 @@ export type Profile = {
   area: string;
   address?: string;
   business_name?: string;
+  status?: 'Available' | 'On Route' | 'At Capacity' | 'Offline';
   created_at: string;
   updated_at: string;
 };
