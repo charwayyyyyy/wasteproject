@@ -2,165 +2,154 @@
 
 import { useDemoStore } from "@/store/demo-store";
 import { format, parseISO } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { BarChart3, AlertTriangle, Users, MapPin, CheckCircle2, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { BarChart3, AlertTriangle, Users, CalendarClock, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboard() {
-  const { currentUser, pickups, reports, profiles } = useDemoStore();
+  const { pickups, reports, users } = useDemoStore();
+
+  const totalPickups = pickups.length;
+  const completedPickups = pickups.filter(p => p.status === 'completed').length;
   
-  if (!currentUser) return null;
+  const activeReports = reports.filter(r => r.status !== 'cleared');
+  const criticalReports = reports.filter(r => r.severity === 'high' && r.status !== 'cleared');
 
-  const communityPickups = pickups.filter(p => p.community === currentUser.community);
-  const communityReports = reports.filter(r => r.community === currentUser.community);
-  const communityUsers = profiles.filter(p => p.community === currentUser.community);
-
-  const activeReports = communityReports.filter(r => r.status !== 'Cleared');
-  const completedPickupsToday = communityPickups.filter(p => 
-    p.status === 'Collected' &&
-    new Date(p.collected_at || p.updated_at).toDateString() === new Date().toDateString()
-  ).length;
-
-  const getStatusBadgeVariant = (status: string) => {
-    switch(status) {
-      case 'Collected': return 'default';
-      case 'Cancelled': 
-      case 'Could Not Collect': return 'destructive';
-      case 'Draft': return 'secondary';
-      default: return 'outline';
-    }
-  };
+  const totalUsers = users.filter(u => u.role !== 'admin').length;
+  const activeCollectors = users.filter(u => u.role === 'collector').length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between md:items-end gap-4 bg-white p-6 rounded-lg border shadow-sm">
-        <div>
-          <h1 className="text-2xl font-bold mb-1">Community Overview</h1>
-          <p className="text-muted-foreground flex items-center gap-1.5">
-            <MapPin className="h-4 w-4" /> {currentUser.community}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-sm text-muted-foreground">System Status</p>
-          <div className="flex items-center gap-2 text-green-600 font-medium">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            All Systems Operational
-          </div>
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 md:pb-0">
+      
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-1">System Overview</h1>
+        <p className="text-text-secondary text-[15px]">Monitor the real-time status of your community waste network.</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Pickups Today</p>
-                <h3 className="text-3xl font-bold">{completedPickupsToday}</h3>
-              </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <CalendarClock className="w-5 h-5" />
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-              <span className="text-green-500 font-medium mr-1">+12%</span> from yesterday
-            </div>
-          </CardContent>
-        </Card>
+            <h3 className="font-semibold text-[15px] text-text-secondary">Total Pickups</h3>
+          </div>
+          <div className="flex items-end justify-between">
+            <p className="text-3xl font-bold text-text-primary">{totalPickups}</p>
+            <p className="text-[13px] font-medium text-success flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" /> +12%
+            </p>
+          </div>
+        </div>
 
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Reports</p>
-                <h3 className="text-3xl font-bold">{activeReports.length}</h3>
-              </div>
-              <div className="p-3 bg-amber-100 rounded-lg">
-                <AlertTriangle className="h-5 w-5 text-amber-600" />
-              </div>
+        <div className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-warning-background flex items-center justify-center text-warning">
+              <AlertTriangle className="w-5 h-5" />
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              {activeReports.filter(r => r.severity === 'Urgent').length} urgent issues
-            </div>
-          </CardContent>
-        </Card>
+            <h3 className="font-semibold text-[15px] text-text-secondary">Active Reports</h3>
+          </div>
+          <div className="flex items-end justify-between">
+            <p className="text-3xl font-bold text-text-primary">{activeReports.length}</p>
+            {criticalReports.length > 0 && (
+              <p className="text-[13px] font-medium text-danger bg-danger-background px-2 py-0.5 rounded-full">
+                {criticalReports.length} Critical
+              </p>
+            )}
+          </div>
+        </div>
 
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Registered Users</p>
-                <h3 className="text-3xl font-bold">{communityUsers.length}</h3>
-              </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="h-5 w-5 text-blue-600" />
-              </div>
+        <div className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-information-background flex items-center justify-center text-information">
+              <Users className="w-5 h-5" />
             </div>
-            <div className="flex items-center text-sm text-muted-foreground">
-              {communityUsers.filter(u => u.role === 'collector').length} active collectors
+            <h3 className="font-semibold text-[15px] text-text-secondary">Network Size</h3>
+          </div>
+          <div className="flex items-end justify-between">
+            <p className="text-3xl font-bold text-text-primary">{totalUsers}</p>
+            <p className="text-[13px] font-medium text-text-secondary">
+              {activeCollectors} active collectors
+            </p>
+          </div>
+        </div>
+
+        <div className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-full bg-success-background flex items-center justify-center text-success">
+              <BarChart3 className="w-5 h-5" />
             </div>
-          </CardContent>
-        </Card>
+            <h3 className="font-semibold text-[15px] text-text-secondary">Resolution Rate</h3>
+          </div>
+          <div className="flex items-end justify-between">
+            <p className="text-3xl font-bold text-text-primary">
+              {totalPickups > 0 ? Math.round((completedPickups / totalPickups) * 100) : 0}%
+            </p>
+          </div>
+        </div>
+        
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Recent Pickups Activity */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Recent Pickups Activity</CardTitle>
-            <CardDescription>Latest collection requests across the community.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {communityPickups.slice(0, 5).map(pickup => (
-                <div key={pickup.id} className="flex justify-between items-center pb-4 border-b last:border-0 last:pb-0">
-                  <div>
-                    <p className="font-medium">{pickup.waste_type}</p>
-                    <p className="text-sm text-muted-foreground">{pickup.area} • {format(parseISO(pickup.created_at), 'MMM d')}</p>
-                  </div>
-                  <Badge variant={getStatusBadgeVariant(pickup.status)} className={
-                    pickup.status !== 'Collected' && pickup.status !== 'Cancelled' && pickup.status !== 'Could Not Collect' 
-                      ? 'bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200' 
-                      : ''
-                  }>
-                    {pickup.status}
-                  </Badge>
+        {/* Recent Pickups Table/List */}
+        <section className="bg-surface border border-border-subtle rounded-[24px] overflow-hidden shadow-sm">
+          <div className="p-5 border-b border-border-subtle flex items-center justify-between">
+            <h2 className="font-bold text-lg text-text-primary">Recent Pickups</h2>
+            <Button variant="ghost" size="sm" asChild className="h-8 text-primary">
+              <Link href="/admin/pickups">View All</Link>
+            </Button>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {pickups.slice(0, 4).map(pickup => (
+              <div key={pickup.id} className="p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-semibold text-[15px] text-text-primary capitalize">{pickup.waste_type.replace('_', ' ')}</p>
+                  <p className="text-[13px] text-text-secondary">{pickup.location}</p>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
+                  pickup.status === 'completed' ? 'bg-success-background text-success' : 
+                  pickup.status === 'in_progress' ? 'bg-information-background text-information' : 
+                  'bg-warning-background text-warning'
+                }`}>
+                  {pickup.status.replace('_', ' ')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
 
-        {/* Hotspots Overview */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader>
-            <CardTitle>Dumping Hotspots</CardTitle>
-            <CardDescription>Areas with multiple reports requiring attention.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {activeReports.slice(0, 5).map(report => (
-                <div key={report.id} className="flex justify-between items-center pb-4 border-b last:border-0 last:pb-0">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5">
-                      <AlertTriangle className={`h-4 w-4 ${report.severity === 'Urgent' ? 'text-red-500' : 'text-amber-500'}`} />
-                    </div>
-                    <div>
-                      <p className="font-medium line-clamp-1">{report.location}</p>
-                      <p className="text-sm text-muted-foreground">{report.waste_type}</p>
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{format(parseISO(report.created_at), 'MMM d')}</span>
+        {/* Action Needed */}
+        <section className="bg-surface border border-border-subtle rounded-[24px] overflow-hidden shadow-sm">
+          <div className="p-5 border-b border-border-subtle flex items-center justify-between">
+            <h2 className="font-bold text-lg text-text-primary">Reports Needing Triage</h2>
+            <Button variant="ghost" size="sm" asChild className="h-8 text-primary">
+              <Link href="/admin/reports">View All</Link>
+            </Button>
+          </div>
+          <div className="divide-y divide-border-subtle">
+            {activeReports.slice(0, 4).map(report => (
+              <div key={report.id} className="p-4 flex items-center justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-[15px] text-text-primary truncate">{report.location}</p>
+                  <p className="text-[13px] text-text-secondary truncate">{report.description}</p>
                 </div>
-              ))}
-              {activeReports.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-4">No active reports. Community is clean!</p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                <Button size="sm" variant="outline" asChild className="rounded-xl shrink-0">
+                  <Link href={`/admin/reports/${report.id}`}>Review</Link>
+                </Button>
+              </div>
+            ))}
+            {activeReports.length === 0 && (
+              <div className="p-8 text-center text-text-secondary text-[15px]">
+                No active reports.
+              </div>
+            )}
+          </div>
+        </section>
       </div>
+
     </div>
   );
 }

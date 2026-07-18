@@ -11,86 +11,152 @@
 }
 
 @layer base {
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-  }
   :root {
-    --background: hsl(40 20% 97%); /* Warm off-white */
-    --foreground: hsl(215 28% 17%); /* Charcoal */
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(215 28% 17%);
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(215 28% 17%);
-    --primary: hsl(163 88% 20%); /* Deep green */
+    /* 
+      iOS-inspired Semantic Tokens
+      Warm off-white background, deep green primary, semantic states.
+    */
+    --background: hsl(40 10% 98%); /* Warm off-white */
+    --background-secondary: hsl(220 14% 96%); /* Subtle cool gray */
+    
+    --surface: hsl(0 0% 100%); /* Pure white */
+    --surface-elevated: hsl(0 0% 100%);
+    --surface-muted: hsl(220 14% 96%);
+    --surface-glass: rgba(255, 255, 255, 0.75);
+    
+    --text-primary: hsl(220 30% 15%); /* Deep charcoal */
+    --text-secondary: hsl(220 15% 45%); /* Cool gray */
+    --text-tertiary: hsl(220 15% 65%);
+    
+    --border-subtle: hsl(220 15% 90%);
+    --border-strong: hsl(220 15% 80%);
+    
+    /* Primary action: Rich natural green */
+    --primary: hsl(150 60% 30%); 
+    --primary-hover: hsl(150 60% 25%);
+    --primary-pressed: hsl(150 60% 20%);
     --primary-foreground: hsl(0 0% 100%);
-    --secondary: hsl(163 20% 90%);
-    --secondary-foreground: hsl(163 88% 20%);
-    --muted: hsl(40 20% 90%);
-    --muted-foreground: hsl(215 16% 47%);
-    --accent: hsl(40 20% 90%);
-    --accent-foreground: hsl(215 28% 17%);
-    --destructive: hsl(0 84% 60%);
+    
+    /* Secondary accent: Muted teal */
+    --secondary: hsl(180 30% 90%);
+    --secondary-foreground: hsl(180 60% 25%);
+
+    /* Semantic States */
+    --success: hsl(140 60% 40%);
+    --success-background: hsl(140 60% 95%);
+    
+    --warning: hsl(35 90% 50%); /* Warm amber */
+    --warning-background: hsl(35 90% 96%);
+    
+    --danger: hsl(0 75% 55%); /* Restrained red */
+    --danger-background: hsl(0 75% 97%);
+    
+    --information: hsl(210 80% 50%); /* Calm blue */
+    --information-background: hsl(210 80% 96%);
+    
+    --focus-ring: hsla(150, 60%, 30%, 0.4);
+    
+    /* Shadows */
+    --shadow-sm-value: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md-value: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg-value: 0 12px 24px rgba(0,0,0,0.08);
+
+    /* Map Shadcn required variables to our semantic tokens */
+    --foreground: var(--text-primary);
+    --card: var(--surface);
+    --card-foreground: var(--text-primary);
+    --popover: var(--surface);
+    --popover-foreground: var(--text-primary);
+    --muted: var(--surface-muted);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--background-secondary);
+    --accent-foreground: var(--text-primary);
+    --destructive: var(--danger);
     --destructive-foreground: hsl(0 0% 100%);
-    --border: hsl(214 32% 91%);
-    --input: hsl(214 32% 91%);
-    --ring: hsl(163 88% 20%);
-    --chart-1: hsl(163 88% 20%);
-    --chart-2: hsl(163 40% 40%);
-    --chart-3: hsl(163 40% 60%);
-    --chart-4: hsl(163 40% 80%);
-    --chart-5: hsl(163 40% 90%);
-    --radius: 0.5rem;
-    --sidebar: hsl(40 20% 95%);
-    --sidebar-foreground: hsl(215 28% 17%);
-    --sidebar-primary: hsl(163 88% 20%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(40 20% 90%);
-    --sidebar-accent-foreground: hsl(215 28% 17%);
-    --sidebar-border: hsl(214 32% 91%);
-    --sidebar-ring: hsl(163 88% 20%);
+    --border: var(--border-subtle);
+    --input: var(--border-strong);
+    --ring: var(--primary);
+    --radius: 12px;
+
+    /* Chart colors for potential graphs */
+    --chart-1: hsl(150 60% 30%);
+    --chart-2: hsl(180 40% 45%);
+    --chart-3: hsl(35 90% 50%);
+    --chart-4: hsl(210 80% 50%);
+    --chart-5: hsl(220 15% 65%);
+    
+    /* Font bindings */
+    --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", sans-serif;
   }
+  
+  /* Fallback dark mode mapping if added later */
   .dark {
-    --background: hsl(215 28% 12%);
-    --foreground: hsl(40 20% 97%);
-    --card: hsl(215 28% 15%);
-    --card-foreground: hsl(40 20% 97%);
-    --popover: hsl(215 28% 15%);
-    --popover-foreground: hsl(40 20% 97%);
-    --primary: hsl(163 88% 40%);
-    --primary-foreground: hsl(215 28% 12%);
-    --secondary: hsl(215 28% 20%);
-    --secondary-foreground: hsl(40 20% 97%);
-    --muted: hsl(215 28% 20%);
-    --muted-foreground: hsl(215 16% 65%);
-    --accent: hsl(215 28% 20%);
-    --accent-foreground: hsl(40 20% 97%);
-    --destructive: hsl(0 62% 30%);
+    --background: hsl(220 30% 10%);
+    --background-secondary: hsl(220 30% 14%);
+    --surface: hsl(220 30% 18%);
+    --surface-elevated: hsl(220 30% 22%);
+    --surface-muted: hsl(220 30% 16%);
+    --surface-glass: rgba(30, 35, 45, 0.75);
+    
+    --text-primary: hsl(0 0% 98%);
+    --text-secondary: hsl(220 15% 70%);
+    --text-tertiary: hsl(220 15% 50%);
+    
+    --border-subtle: hsl(220 20% 25%);
+    --border-strong: hsl(220 20% 35%);
+    
+    --primary: hsl(150 60% 40%);
+    --primary-hover: hsl(150 60% 45%);
+    --primary-pressed: hsl(150 60% 50%);
+    
+    --secondary: hsl(180 30% 20%);
+    --secondary-foreground: hsl(180 60% 80%);
+
+    --success: hsl(140 60% 50%);
+    --success-background: hsl(140 60% 15%);
+    
+    --warning: hsl(35 90% 60%);
+    --warning-background: hsl(35 90% 20%);
+    
+    --danger: hsl(0 75% 65%);
+    --danger-background: hsl(0 75% 20%);
+    
+    --information: hsl(210 80% 60%);
+    --information-background: hsl(210 80% 20%);
+    
+    --foreground: var(--text-primary);
+    --card: var(--surface);
+    --card-foreground: var(--text-primary);
+    --popover: var(--surface);
+    --popover-foreground: var(--text-primary);
+    --muted: var(--surface-muted);
+    --muted-foreground: var(--text-secondary);
+    --accent: var(--background-secondary);
+    --accent-foreground: var(--text-primary);
+    --destructive: var(--danger);
     --destructive-foreground: hsl(0 0% 100%);
-    --border: hsl(215 28% 20%);
-    --input: hsl(215 28% 20%);
-    --ring: hsl(163 88% 40%);
-    --chart-1: hsl(163 88% 40%);
-    --chart-2: hsl(163 40% 50%);
-    --chart-3: hsl(163 40% 60%);
-    --chart-4: hsl(163 40% 70%);
-    --chart-5: hsl(163 40% 80%);
-    --sidebar: hsl(215 28% 15%);
-    --sidebar-foreground: hsl(40 20% 97%);
-    --sidebar-primary: hsl(163 88% 40%);
-    --sidebar-primary-foreground: hsl(0 0% 100%);
-    --sidebar-accent: hsl(215 28% 20%);
-    --sidebar-accent-foreground: hsl(40 20% 97%);
-    --sidebar-border: hsl(215 28% 20%);
-    --sidebar-ring: hsl(163 88% 40%);
+    --border: var(--border-subtle);
+    --input: var(--border-strong);
   }
+}
+
+@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  html {
-    @apply font-sans;
+  
+  /* Remove scrollbars for cleaner sheets/drawers but keep functionality */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

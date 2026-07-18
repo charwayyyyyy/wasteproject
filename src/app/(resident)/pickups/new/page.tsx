@@ -1,277 +1,256 @@
 "use client";
 
-import { useDemoStore } from "@/store/demo-store";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
-import { format, addDays } from "date-fns";
-
+import { useRouter } from "next/navigation";
+import { useDemoStore } from "@/store/demo-store";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { ArrowLeft, CheckCircle2, ChevronRight, Package, Box, MapPin, CalendarClock, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
-const formSchema = z.object({
-  waste_type: z.string().min(1, "Please select a waste type"),
-  quantity_category: z.string().min(1, "Please select an estimated quantity"),
-  address: z.string().min(5, "Address must be at least 5 characters"),
-  landmark: z.string().optional(),
-  preferred_date: z.string().min(1, "Please select a preferred date"),
-  notes: z.string().optional(),
-});
+const WASTE_TYPES = [
+  { id: 'plastic', label: 'Plastics', description: 'Bottles, containers, wrapping', icon: Box },
+  { id: 'organic', label: 'Organic', description: 'Food scraps, yard waste', icon: LeafIcon },
+  { id: 'electronic', label: 'E-Waste', description: 'Batteries, old devices', icon: Package },
+  { id: 'mixed', label: 'Mixed General', description: 'Unsorted household waste', icon: Package },
+];
 
-export default function NewPickupPage() {
-  const { currentUser, addPickup } = useDemoStore();
+const QUANTITIES = [
+  { id: 'small', label: 'Small (1-2 bags)' },
+  { id: 'medium', label: 'Medium (3-5 bags)' },
+  { id: 'large', label: 'Large (Bulk/Furniture)' },
+];
+
+function LeafIcon(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 20A7 7 0 0 1 14 6h7v7a7 7 0 0 1-7 7Z"/><path d="M11 20a7 7 0 0 0 7-7v-7"/><path d="M11 20a7 7 0 0 1-7-7v-7h7Z"/>
+    </svg>
+  );
+}
+
+export default function NewPickup() {
   const router = useRouter();
+  const { currentUser, addPickup } = useDemoStore();
+  const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [newPickupId, setNewPickupId] = useState("");
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      waste_type: "",
-      quantity_category: "",
-      address: currentUser?.address || "",
-      landmark: "",
-      preferred_date: "",
-      notes: "",
-    },
-  });
+  
+  // Form State
+  const [wasteType, setWasteType] = useState('');
+  const [quantity, setQuantity] = useState('');
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [notes, setNotes] = useState('');
 
   if (!currentUser) return null;
 
-  const today = new Date();
-  const tomorrow = addDays(today, 1);
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleSubmit = () => {
     setIsSubmitting(true);
     
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const id = `pickup-${Date.now()}`;
-    addPickup({
-      user_id: currentUser!.id,
-      waste_type: values.waste_type,
-      quantity_category: values.quantity_category,
-      address: values.address,
-      community: currentUser!.community,
-      area: currentUser!.area,
-      landmark: values.landmark,
-      preferred_date: values.preferred_date,
-      status: 'Submitted',
-      priority: 1,
-      notes: values.notes,
-    });
-    
-    setNewPickupId(id);
-    setIsSuccess(true);
-    setIsSubmitting(false);
-  }
-
-  if (isSuccess) {
-    return (
-      <div className="max-w-2xl mx-auto pt-8">
-        <Card className="border-0 shadow-md text-center py-8">
-          <CardHeader>
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl">Request Submitted</CardTitle>
-            <CardDescription className="text-base mt-2">
-              Your pickup request has been successfully submitted and is awaiting assignment.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-muted p-4 rounded-md inline-block mb-4">
-              <p className="text-sm text-muted-foreground mb-1">Reference Number</p>
-              <p className="font-mono font-medium">{newPickupId}</p>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              A collector in your area will be assigned shortly. You can track the status on your dashboard.
-            </p>
-          </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row justify-center gap-3 mt-4">
-            <Link href={`/pickups/${newPickupId}`}>
-              <Button className="w-full sm:w-auto">Track Request</Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full sm:w-auto">Return to Dashboard</Button>
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    );
-  }
+    // Simulate network delay for polish
+    setTimeout(() => {
+      addPickup({
+        resident_id: currentUser.id,
+        waste_type: wasteType,
+        quantity_category: quantity,
+        location: `${currentUser.area}, ${currentUser.community}`,
+        status: 'pending',
+        scheduled_date: scheduledDate || new Date().toISOString().split('T')[0],
+        notes
+      });
+      router.push('/pickups?success=true');
+    }, 800);
+  };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <Link href="/pickups" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Pickups
-      </Link>
+    <div className="max-w-xl mx-auto pb-20 animate-in fade-in duration-300">
       
-      <div className="bg-white p-6 rounded-lg border shadow-sm">
-        <div className="mb-6 border-b pb-4">
-          <h1 className="text-2xl font-bold">Request a Pickup</h1>
-          <p className="text-muted-foreground">Schedule a waste collection from your location.</p>
+      {/* Header */}
+      <div className="flex items-center gap-4 mb-8">
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => step > 1 ? setStep(step - 1) : router.push('/dashboard')}>
+          <ArrowLeft className="w-5 h-5 text-text-secondary" />
+        </Button>
+        <div className="flex-1">
+          <h1 className="text-xl font-bold text-text-primary tracking-tight">Request Pickup</h1>
         </div>
+        <div className="text-sm font-medium text-text-tertiary">
+          Step {step} of 3
+        </div>
+      </div>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      {/* Progress Bar */}
+      <div className="w-full h-1.5 bg-surface-muted rounded-full mb-8 overflow-hidden">
+        <div 
+          className="h-full bg-primary transition-all duration-500 ease-out"
+          style={{ width: `${(step / 3) * 100}%` }}
+        />
+      </div>
+
+      <div className="bg-surface border border-border-subtle rounded-[24px] p-6 shadow-sm min-h-[400px] flex flex-col">
+        
+        {/* Step 1: What are you throwing away? */}
+        {step === 1 && (
+          <div className="flex-1 animate-in slide-in-from-right-4 duration-300">
+            <h2 className="text-2xl font-bold tracking-tight text-text-primary mb-2">What are you throwing away?</h2>
+            <p className="text-text-secondary mb-6 text-[15px]">Select the primary type of waste to help us assign the right collector.</p>
             
-            <div className="space-y-4">
-              <h3 className="font-medium text-lg">1. What needs to be collected?</h3>
-              
-              <FormField
-                control={form.control}
-                name="waste_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Waste Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select type of waste" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="General household waste">General household waste</SelectItem>
-                        <SelectItem value="Plastic">Plastic (Recyclable)</SelectItem>
-                        <SelectItem value="Paper or cardboard">Paper or cardboard</SelectItem>
-                        <SelectItem value="Glass">Glass</SelectItem>
-                        <SelectItem value="Metal">Metal</SelectItem>
-                        <SelectItem value="Organic waste">Organic waste</SelectItem>
-                        <SelectItem value="Electronic waste">Electronic waste</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="quantity_category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estimated Quantity</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select approximate quantity" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="One small bag">One small bag</SelectItem>
-                        <SelectItem value="Two to three bags">Two to three bags</SelectItem>
-                        <SelectItem value="Four to six bags">Four to six bags</SelectItem>
-                        <SelectItem value="Large household amount">Large household amount</SelectItem>
-                        {currentUser.role === 'business' && (
-                          <SelectItem value="Business quantity">Business quantity</SelectItem>
-                        )}
-                        <SelectItem value="Custom estimate">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <div className="space-y-3">
+              {WASTE_TYPES.map(type => (
+                <button
+                  key={type.id}
+                  onClick={() => setWasteType(type.id)}
+                  className={cn(
+                    "w-full text-left flex items-center p-4 rounded-[16px] border transition-all active:scale-[0.98]",
+                    wasteType === type.id 
+                      ? "border-primary bg-success-background ring-1 ring-primary shadow-sm" 
+                      : "border-border-subtle bg-surface hover:border-border-strong"
+                  )}
+                >
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center mr-4",
+                    wasteType === type.id ? "bg-primary text-white" : "bg-surface-muted text-text-secondary"
+                  )}>
+                    <type.icon className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-[15px] text-text-primary">{type.label}</h3>
+                    <p className="text-[13px] text-text-secondary">{type.description}</p>
+                  </div>
+                  {wasteType === type.id && <CheckCircle2 className="w-5 h-5 text-primary ml-2" />}
+                </button>
+              ))}
             </div>
-
-            <div className="space-y-4 pt-4 border-t">
-              <h3 className="font-medium text-lg">2. Where should we pick it up?</h3>
-              
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address / Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="E.g., Hse No. 42, Station Road" {...field} />
-                    </FormControl>
-                    <FormDescription>Your registered area is {currentUser.area}.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="landmark"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nearest Landmark (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="E.g., Opposite the blue kiosk" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="space-y-4 pt-4 border-t">
-              <h3 className="font-medium text-lg">3. When is a good time?</h3>
-              
-              <FormField
-                control={form.control}
-                name="preferred_date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Preferred Timing</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select preferred timing" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={today.toISOString()}>Today</SelectItem>
-                        <SelectItem value={tomorrow.toISOString()}>Tomorrow</SelectItem>
-                        <SelectItem value={addDays(today, 2).toISOString()}>In 2 Days</SelectItem>
-                        <SelectItem value={addDays(today, 3).toISOString()}>In 3 Days</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>Collectors will try to match this date based on their routes.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Any instructions for the collector?" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="pt-6 border-t flex justify-end gap-4">
-              <Link href="/pickups">
-                <Button variant="outline" type="button">Cancel</Button>
-              </Link>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Confirm Pickup Request"}
+            
+            <div className="mt-8">
+              <Button 
+                onClick={() => setStep(2)} 
+                disabled={!wasteType}
+                className="w-full h-14 rounded-xl text-[15px] font-semibold"
+              >
+                Continue <ChevronRight className="w-5 h-5 ml-1" />
               </Button>
             </div>
-          </form>
-        </Form>
+          </div>
+        )}
+
+        {/* Step 2: How much and When? */}
+        {step === 2 && (
+          <div className="flex-1 animate-in slide-in-from-right-4 duration-300">
+            <h2 className="text-2xl font-bold tracking-tight text-text-primary mb-2">Details & Timing</h2>
+            <p className="text-text-secondary mb-6 text-[15px]">Help the collector prepare for the volume.</p>
+            
+            <div className="space-y-6">
+              <div>
+                <label className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider block mb-3 ml-1">Estimated Quantity</label>
+                <div className="flex gap-2 bg-surface-muted p-1 rounded-xl">
+                  {QUANTITIES.map(q => (
+                    <button
+                      key={q.id}
+                      onClick={() => setQuantity(q.id)}
+                      className={cn(
+                        "flex-1 py-2.5 text-[13px] font-medium rounded-lg transition-all",
+                        quantity === q.id 
+                          ? "bg-surface text-text-primary shadow-sm" 
+                          : "text-text-secondary hover:text-text-primary"
+                      )}
+                    >
+                      {q.label.split(' ')[0]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider block mb-3 ml-1">Preferred Date</label>
+                <div className="relative">
+                  <CalendarClock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
+                  <input 
+                    type="date" 
+                    value={scheduledDate}
+                    onChange={(e) => setScheduledDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full h-12 bg-surface border border-border-subtle rounded-xl pl-10 pr-4 text-[15px] text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-auto pt-8">
+              <Button 
+                onClick={() => setStep(3)} 
+                disabled={!quantity || !scheduledDate}
+                className="w-full h-14 rounded-xl text-[15px] font-semibold"
+              >
+                Continue <ChevronRight className="w-5 h-5 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Review & Confirm */}
+        {step === 3 && (
+          <div className="flex-1 animate-in slide-in-from-right-4 duration-300 flex flex-col">
+            <h2 className="text-2xl font-bold tracking-tight text-text-primary mb-2">Review Request</h2>
+            <p className="text-text-secondary mb-6 text-[15px]">Confirm the details before submitting.</p>
+            
+            <div className="bg-surface-muted rounded-[16px] p-5 space-y-4 mb-6">
+              <div className="flex items-center justify-between border-b border-border-subtle pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <Box className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[13px] text-text-secondary font-medium uppercase tracking-wider">Type</p>
+                    <p className="font-semibold text-text-primary capitalize">{wasteType.replace('_', ' ')}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[13px] text-text-secondary font-medium uppercase tracking-wider">Volume</p>
+                  <p className="font-semibold text-text-primary capitalize">{quantity}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <MapPin className="w-5 h-5 text-text-tertiary mt-0.5" />
+                <div>
+                  <p className="font-medium text-[15px] text-text-primary">{currentUser.area}</p>
+                  <p className="text-[13px] text-text-secondary">{currentUser.community}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <CalendarClock className="w-5 h-5 text-text-tertiary mt-0.5" />
+                <div>
+                  <p className="font-medium text-[15px] text-text-primary">{scheduledDate}</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[13px] font-semibold text-text-tertiary uppercase tracking-wider block mb-2 ml-1">Additional Notes (Optional)</label>
+              <textarea 
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Gate code, specific placement..."
+                className="w-full bg-surface border border-border-subtle rounded-xl p-3 text-[15px] text-text-primary focus:outline-none focus:border-primary resize-none h-24"
+              />
+            </div>
+            
+            <div className="mt-auto pt-6">
+              <Button 
+                onClick={handleSubmit} 
+                disabled={isSubmitting}
+                className="w-full h-14 rounded-xl text-[15px] font-semibold bg-primary hover:bg-primary-hover text-white shadow-md hover:shadow-lg transition-all"
+              >
+                {isSubmitting ? (
+                  <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Submitting...</>
+                ) : (
+                  'Confirm & Request'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

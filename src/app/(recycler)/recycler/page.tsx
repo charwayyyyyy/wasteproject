@@ -1,167 +1,93 @@
 "use client";
 
 import { useDemoStore } from "@/store/demo-store";
-import { format, parseISO } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Recycle, Navigation, MapPin, CheckCircle2, TrendingUp, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Package, MapPin, CheckCircle2, Factory } from "lucide-react";
-import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function RecyclerDashboard() {
-  const { currentUser, materials, claimMaterial, disposalPoints } = useDemoStore();
-  const [activeTab, setActiveTab] = useState("available");
-  
+  const { currentUser, pickups, updatePickupStatus } = useDemoStore();
+  const [isUpdating, setIsUpdating] = useState<string | null>(null);
+
   if (!currentUser) return null;
 
-  const availableMaterials = materials.filter(m => m.status === 'Available')
-    .sort((a, b) => new Date(a.available_from).getTime() - new Date(b.available_from).getTime());
-    
-  const claimedMaterials = materials.filter(m => m.recycling_partner_id === currentUser.id)
-    .sort((a, b) => new Date(b.claimed_at || '').getTime() - new Date(a.claimed_at || '').getTime());
+  // Recyclers see completed pickups as "Marketplace Inventory"
+  const availableMaterials = pickups.filter(p => p.status === 'completed');
 
-  const handleClaim = (id: string) => {
-    claimMaterial(id, currentUser.id);
-    toast.success("Material claimed successfully. You can now coordinate pickup.");
-  };
-
-  const getDisposalPointName = (id: string) => {
-    return disposalPoints.find(dp => dp.id === id)?.name || "Unknown Location";
-  };
-
-  const getDisposalPointAddress = (id: string) => {
-    return disposalPoints.find(dp => dp.id === id)?.address || "Unknown Address";
+  const handleClaim = (pickupId: string) => {
+    setIsUpdating(pickupId);
+    setTimeout(() => {
+      // In a real system, we'd transfer ownership to the recycler and trigger payment.
+      // For the demo, we'll mark it as 'claimed' or similar, but since we don't have a 'claimed' status 
+      // in our simple demo state machine, we can just remove it from 'completed' view by marking it 'archived'.
+      // To not break other views, let's just pretend for the demo interaction.
+      updatePickupStatus(pickupId, 'archived' as any);
+      setIsUpdating(null);
+    }, 800);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 bg-white p-6 rounded-lg border shadow-sm">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 md:pb-0">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold mb-1">Materials Marketplace</h1>
-          <p className="text-muted-foreground text-sm">Find and claim separated recyclable materials in the community.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-1">Material Marketplace</h1>
+          <p className="text-text-secondary text-[15px]">Buy pre-sorted, collected waste directly from community disposal points.</p>
         </div>
-        <div className="flex gap-4">
-          <div className="text-center bg-green-50 px-4 py-2 rounded-md border border-green-100">
-            <p className="text-xs font-semibold text-green-800 uppercase tracking-wider mb-0.5">Available</p>
-            <p className="text-xl font-bold text-green-700">{availableMaterials.length}</p>
+        
+        <div className="flex items-center gap-3 bg-surface p-3 pr-5 rounded-2xl border border-border-subtle shadow-sm w-fit">
+          <div className="w-10 h-10 rounded-xl bg-success-background flex items-center justify-center text-success">
+            <DollarSign className="w-5 h-5" />
           </div>
-          <div className="text-center bg-blue-50 px-4 py-2 rounded-md border border-blue-100">
-            <p className="text-xs font-semibold text-blue-800 uppercase tracking-wider mb-0.5">My Claims</p>
-            <p className="text-xl font-bold text-blue-700">{claimedMaterials.length}</p>
+          <div>
+            <p className="text-[11px] font-semibold text-text-tertiary uppercase tracking-wider">Account Balance</p>
+            <p className="font-bold text-lg text-text-primary leading-tight">₵4,250.00</p>
           </div>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-          <TabsTrigger value="available">Available Materials</TabsTrigger>
-          <TabsTrigger value="claims">My Claims</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="available" className="mt-6">
-          {availableMaterials.length === 0 ? (
-            <div className="bg-white border rounded-lg p-12 text-center shadow-sm">
-              <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Package className="h-8 w-8 text-slate-400" />
-              </div>
-              <h3 className="text-lg font-medium mb-2">No materials available</h3>
-              <p className="text-muted-foreground">There are currently no separated materials ready for recycling. Check back later.</p>
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2">
-              {availableMaterials.map((material) => (
-                <Card key={material.id} className="border-0 shadow-sm flex flex-col hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3 border-b">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <Badge className="mb-2 bg-green-100 text-green-800 hover:bg-green-100 border-green-200">
-                          {material.type}
-                        </Badge>
-                        <CardTitle className="text-xl">{material.quantity}</CardTitle>
-                      </div>
-                      <Badge variant="outline" className="text-xs text-muted-foreground">
-                        {material.quality_rating} Quality
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex-1 space-y-3 pt-4">
-                    <div className="flex items-start gap-3 text-sm">
-                      <Factory className="h-5 w-5 text-muted-foreground shrink-0" />
-                      <div>
-                        <p className="font-medium text-foreground">{getDisposalPointName(material.location_id)}</p>
-                        <p className="text-muted-foreground mt-0.5">{getDisposalPointAddress(material.location_id)}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <Package className="h-4 w-4 shrink-0" /> Available since {format(parseISO(material.available_from), 'MMM d')}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="pt-0 pb-4 px-4 border-t bg-slate-50 mt-4 rounded-b-lg">
-                    <Button className="w-full mt-4" onClick={() => handleClaim(material.id)}>
-                      Claim Material
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="claims" className="mt-6">
-          {claimedMaterials.length === 0 ? (
-            <div className="bg-white border rounded-lg p-12 text-center shadow-sm">
-              <h3 className="text-lg font-medium mb-2">No claims yet</h3>
-              <p className="text-muted-foreground">Materials you claim will appear here.</p>
-              <Button variant="link" onClick={() => setActiveTab("available")}>Browse available materials</Button>
-            </div>
-          ) : (
-            <div className="grid gap-4">
-              {claimedMaterials.map((material) => (
-                <Card key={material.id} className="border-0 shadow-sm overflow-hidden border-l-4 border-l-blue-500">
-                  <div className="flex flex-col md:flex-row">
-                    <CardContent className="p-5 flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">{material.type}</h3>
-                          <Badge variant="outline">{material.quantity}</Badge>
-                        </div>
-                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-50">
-                          {material.status}
-                        </Badge>
-                      </div>
-                      
-                      <div className="space-y-2 mt-4 text-sm">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
-                          <div>
-                            <p className="font-medium">{getDisposalPointName(material.location_id)}</p>
-                            <p className="text-muted-foreground text-xs">{getDisposalPointAddress(material.location_id)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                          <CheckCircle2 className="h-4 w-4 shrink-0" /> Claimed on {format(parseISO(material.claimed_at!), 'MMM d, yyyy')}
-                        </div>
-                      </div>
-                    </CardContent>
-                    
-                    <div className="bg-slate-50 p-4 md:w-64 flex flex-col justify-center gap-2 border-t md:border-t-0 md:border-l">
-                      <p className="text-sm font-medium mb-2">Coordinate Pickup</p>
-                      <Button variant="outline" className="w-full text-xs" onClick={() => toast.info("Contact info revealed.")}>
-                        View Contact Info
-                      </Button>
-                      <Button variant="default" className="w-full text-xs" onClick={() => toast.success("Marked as collected.")}>
-                        Mark as Collected
-                      </Button>
-                    </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {availableMaterials.length > 0 ? (
+          availableMaterials.map((material) => (
+            <div key={material.id} className="bg-surface border border-border-subtle rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+              <div className="p-5 border-b border-border-subtle">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-success-background text-[11px] font-semibold text-success uppercase tracking-wider">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Verified Sort
                   </div>
-                </Card>
-              ))}
+                  <span className="font-bold text-text-primary">₵{material.quantity_category === 'large' ? '120' : material.quantity_category === 'medium' ? '45' : '15'}</span>
+                </div>
+                <h3 className="text-xl font-bold text-text-primary tracking-tight capitalize mb-1">
+                  {material.waste_type.replace('_', ' ')} • {material.quantity_category}
+                </h3>
+                <p className="text-[14px] text-text-secondary flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-text-tertiary" /> Available at {material.location.split(',')[0]} Hub
+                </p>
+              </div>
+              <div className="p-5 bg-background-secondary mt-auto">
+                <Button 
+                  onClick={() => handleClaim(material.id)}
+                  disabled={isUpdating === material.id}
+                  className="w-full h-12 rounded-xl bg-text-primary hover:bg-black text-white font-medium shadow-sm"
+                >
+                  {isUpdating === material.id ? 'Processing...' : 'Purchase & Claim'}
+                </Button>
+              </div>
             </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          ))
+        ) : (
+          <div className="col-span-full">
+            <EmptyState 
+              icon={Recycle}
+              title="No materials available"
+              description="There is currently no processed inventory at the disposal hubs. Check back soon."
+            />
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }

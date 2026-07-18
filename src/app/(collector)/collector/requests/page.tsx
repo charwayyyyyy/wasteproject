@@ -1,0 +1,80 @@
+"use client";
+
+import { useDemoStore } from "@/store/demo-store";
+import { useState } from "react";
+import { MapPin, Navigation, ListTodo } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
+
+export default function CollectorRequests() {
+  const { currentUser, pickups, updatePickupStatus } = useDemoStore();
+  const [isUpdating, setIsUpdating] = useState<string | null>(null);
+
+  if (!currentUser) return null;
+
+  // Find pickups that are pending in the collector's area
+  const availableRequests = pickups.filter(p => 
+    p.status === 'pending' && 
+    p.location.includes(currentUser.area)
+  );
+
+  const handleAcceptJob = (pickupId: string) => {
+    setIsUpdating(pickupId);
+    setTimeout(() => {
+      updatePickupStatus(pickupId, 'scheduled');
+      // In a real app, we would also set collector_id here. 
+      // Our demo store update logic might need to be tweaked, but for UI purposes:
+      setIsUpdating(null);
+    }, 600);
+  };
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500 pb-20 md:pb-0">
+      
+      <div>
+        <h1 className="text-2xl font-bold text-text-primary tracking-tight mb-2">Available Jobs</h1>
+        <p className="text-text-secondary text-[15px]">Pickups requested in your immediate area ({currentUser.area}).</p>
+      </div>
+
+      <div className="space-y-4">
+        {availableRequests.length > 0 ? (
+          availableRequests.map((pickup) => (
+            <div key={pickup.id} className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm hover:shadow-md transition-shadow">
+              
+              <div className="flex flex-col sm:flex-row justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-information-background text-[11px] font-semibold text-information mb-2 uppercase tracking-wider">
+                    {pickup.waste_type.replace('_', ' ')} • {pickup.quantity_category}
+                  </div>
+                  <h3 className="text-xl font-bold text-text-primary tracking-tight mb-2">{pickup.location}</h3>
+                  <div className="flex items-center gap-4 text-[14px] text-text-secondary">
+                    <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> 2.4 km away</span>
+                    <span className="flex items-center gap-1.5"><Navigation className="w-4 h-4" /> Drop at Alpha Point</span>
+                  </div>
+                </div>
+
+                <div className="flex sm:flex-col items-center justify-center gap-2 border-t sm:border-0 border-border-subtle pt-4 sm:pt-0 mt-2 sm:mt-0">
+                  <Button 
+                    onClick={() => handleAcceptJob(pickup.id)}
+                    disabled={isUpdating === pickup.id}
+                    className="w-full sm:w-32 rounded-xl bg-success hover:bg-success/90 text-white font-medium shadow-sm h-12"
+                  >
+                    {isUpdating === pickup.id ? 'Accepting...' : 'Accept Job'}
+                  </Button>
+                </div>
+              </div>
+              
+            </div>
+          ))
+        ) : (
+          <EmptyState 
+            icon={ListTodo}
+            title="No nearby requests"
+            description="There are currently no pending waste pickups in your designated sector. Check back later."
+          />
+        )}
+      </div>
+
+    </div>
+  );
+}

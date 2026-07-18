@@ -10,26 +10,48 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        // Core Shadcn variables mapping
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
-        card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
+        background: {
+          DEFAULT: "var(--background)",
+          secondary: "var(--background-secondary)"
         },
-        popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
+        foreground: "var(--foreground)",
+        
+        // Semantic Token mappings
+        surface: {
+          DEFAULT: "var(--surface)",
+          elevated: "var(--surface-elevated)",
+          muted: "var(--surface-muted)",
+          glass: "var(--surface-glass)",
         },
         primary: {
           DEFAULT: "var(--primary)",
+          hover: "var(--primary-hover)",
+          pressed: "var(--primary-pressed)",
           foreground: "var(--primary-foreground)",
         },
         secondary: {
           DEFAULT: "var(--secondary)",
           foreground: "var(--secondary-foreground)",
+        },
+        success: {
+          DEFAULT: "var(--success)",
+          background: "var(--success-background)",
+        },
+        warning: {
+          DEFAULT: "var(--warning)",
+          background: "var(--warning-background)",
+        },
+        danger: {
+          DEFAULT: "var(--danger)",
+          background: "var(--danger-background)",
+        },
+        information: {
+          DEFAULT: "var(--information)",
+          background: "var(--information-background)",
         },
         muted: {
           DEFAULT: "var(--muted)",
@@ -43,6 +65,14 @@ const config: Config = {
           DEFAULT: "var(--destructive)",
           foreground: "var(--destructive-foreground)",
         },
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
         chart: {
           "1": "var(--chart-1)",
           "2": "var(--chart-2)",
@@ -50,22 +80,17 @@ const config: Config = {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
-        sidebar: {
-          DEFAULT: "var(--sidebar)",
-          foreground: "var(--sidebar-foreground)",
-          primary: "var(--sidebar-primary)",
-          "primary-foreground": "var(--sidebar-primary-foreground)",
-          accent: "var(--sidebar-accent)",
-          "accent-foreground": "var(--sidebar-accent-foreground)",
-          border: "var(--sidebar-border)",
-          ring: "var(--sidebar-ring)",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        sm: "var(--shadow-sm-value)",
+        md: "var(--shadow-md-value)",
+        lg: "var(--shadow-lg-value)",
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
