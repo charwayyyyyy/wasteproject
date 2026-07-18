@@ -13,6 +13,8 @@ export default function LandingPage() {
             <Link href="/"><Logo size={30} /></Link>
           </div>
           <div className="hidden md:flex items-center gap-8">
+            <Link href="/how-it-works" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</Link>
+            <Link href="/disposal-points" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">Disposal points</Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="hidden md:inline-block text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">
