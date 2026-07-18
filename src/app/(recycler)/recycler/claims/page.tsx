@@ -27,7 +27,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import Link from "next/link";
 
 export default function RecyclerClaimsPage() {
-  const { currentUser, materials, profiles, completeMaterialClaim } = useDemoStore();
+  const { currentUser, materials, completeMaterialClaim } = useDemoStore();
   const [activeTab, setActiveTab] = useState("active");
   
   // Mark Collected State
@@ -83,7 +83,7 @@ export default function RecyclerClaimsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-sm text-text-secondary mt-3">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-text-tertiary" />
-              <span className="truncate">{material.location_area}</span>
+              <span className="truncate">{material.area}</span>
             </div>
             <div className="flex items-center gap-2">
               <Package className="w-4 h-4 text-text-tertiary" />
@@ -91,11 +91,11 @@ export default function RecyclerClaimsPage() {
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-text-tertiary" />
-              <span>{new Date(isActive ? material.claimed_at : material.collected_at).toLocaleDateString()}</span>
+              <span>{new Date(isActive ? (material.claimed_at || new Date().toISOString()) : (material.collected_at || new Date().toISOString())).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-text-tertiary" />
-              <span>Available since: {new Date(material.created_at).toLocaleDateString()}</span>
+              <span>{new Date(isActive ? (material.claimed_at || new Date().toISOString()) : (material.collected_at || new Date().toISOString())).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             </div>
           </div>
         </div>
@@ -152,7 +152,8 @@ export default function RecyclerClaimsPage() {
                 icon={Package}
                 title="No active claims"
                 description="You haven't claimed any materials yet. Head to the marketplace to find available materials."
-                action={{ label: "Browse Marketplace", href: "/recycler" }}
+                actionLabel="Browse Marketplace"
+                onAction={() => window.location.href = "/recycler"}
               />
             ) : (
               activeClaims.map(m => renderClaimCard(m, true))

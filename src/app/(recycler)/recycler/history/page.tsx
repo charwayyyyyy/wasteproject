@@ -9,6 +9,7 @@ import {
   FilterX,
   Search,
   Download,
+  CheckCircle2,
   BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ export default function RecyclerHistoryPage() {
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       const matchType = m.material_type.toLowerCase().includes(q);
-      const matchArea = m.location_area.toLowerCase().includes(q);
+      const matchArea = m.area.toLowerCase().includes(q);
       return matchType || matchArea;
     }
     return true;
@@ -124,7 +125,8 @@ export default function RecyclerHistoryPage() {
             icon={FilterX}
             title="No records match your search"
             description="Try using different keywords."
-            action={{ label: "Clear Search", onClick: () => setSearchQuery("") }}
+            actionLabel="Clear Search"
+            onAction={() => setSearchQuery("")}
           />
         ) : (
           <div className="grid gap-4">
@@ -141,7 +143,7 @@ export default function RecyclerHistoryPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-2 gap-x-4 text-sm text-text-secondary mt-3">
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-text-tertiary" />
-                      <span className="truncate">{material.location_area}</span>
+                      <span className="truncate">{material.area}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Package className="w-4 h-4 text-text-tertiary" />

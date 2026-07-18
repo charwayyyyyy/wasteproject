@@ -36,7 +36,7 @@ export default function CollectorRequests() {
       <div className="space-y-4">
         {availableRequests.length > 0 ? (
           availableRequests.map((pickup) => (
-            <div key={pickup.id} className="bg-surface border border-border-subtle rounded-[24px] p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div key={pickup.id} className="bg-surface border border-border-subtle rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
               
               <div className="flex flex-col sm:flex-row justify-between gap-4">
                 <div>

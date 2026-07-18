@@ -33,24 +33,24 @@ export default function CollectorDashboard() {
     <div className="space-y-6 animate-in fade-in duration-500 pb-20 md:pb-0">
       
       {/* Header */}
-      <div className="bg-success-background border border-success/20 rounded-[20px] p-5 shadow-sm">
+      <div className="bg-surface border border-border-subtle rounded-2xl p-6 shadow-sm">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-success mb-1 tracking-tight">Active Route</h1>
-            <p className="text-success/70 text-[15px]">{currentUser.area} Sector</p>
+            <h1 className="text-2xl font-bold text-text-primary mb-1 tracking-tight">Active Route</h1>
+            <p className="text-text-secondary text-[15px]">{currentUser.area} Sector</p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-success/20 flex items-center justify-center text-success">
+          <div className="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success">
             <Truck className="w-6 h-6" />
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t border-success/10 flex gap-6">
+        <div className="mt-6 pt-6 border-t border-border-subtle flex gap-8">
           <div>
-            <p className="text-xs font-semibold text-success/60 uppercase tracking-wider mb-0.5">Assigned Stops</p>
-            <p className="font-bold text-xl text-success">{activeRoute.length}</p>
+            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Assigned Stops</p>
+            <p className="font-bold text-2xl text-text-primary">{activeRoute.length}</p>
           </div>
           <div>
-            <p className="text-xs font-semibold text-success/60 uppercase tracking-wider mb-0.5">Est. Time</p>
-            <p className="font-bold text-xl text-success">{activeRoute.length * 15} min</p>
+            <p className="text-xs font-semibold text-text-tertiary uppercase tracking-wider mb-1">Est. Time</p>
+            <p className="font-bold text-2xl text-text-primary">{activeRoute.length * 15} min</p>
           </div>
         </div>
       </div>
@@ -64,9 +64,9 @@ export default function CollectorDashboard() {
       <div className="space-y-4">
         {activeRoute.length > 0 ? (
           activeRoute.map((pickup, index) => (
-            <div key={pickup.id} className="bg-surface border border-border-subtle rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div key={pickup.id} className="bg-surface border border-border-subtle rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
               
-              <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex gap-4">
                   <div className="flex flex-col items-center gap-1 mt-1 shrink-0">
                     <div className="w-8 h-8 rounded-full bg-surface-muted flex items-center justify-center font-bold text-text-secondary text-sm border border-border-strong">

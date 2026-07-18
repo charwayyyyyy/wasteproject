@@ -229,7 +229,8 @@ export default function AdminPickupsPage() {
             icon={FilterX}
             title="No pickups match these filters"
             description="Adjust or clear the filters to see more requests."
-            action={{ label: "Clear Filters", onClick: () => { setStatusFilter("All"); setSearchQuery(""); } }}
+            actionLabel="Clear Filters"
+            onAction={() => { setStatusFilter("All"); setSearchQuery(""); }}
           />
         ) : (
           <div className="grid gap-4">
@@ -299,7 +300,7 @@ export default function AdminPickupsPage() {
           <div className="py-4 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Collector</label>
-              <Select value={selectedCollectorId} onValueChange={setSelectedCollectorId}>
+              <Select value={selectedCollectorId} onValueChange={(val) => setSelectedCollectorId(val as string)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a collector" />
                 </SelectTrigger>

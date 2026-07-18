@@ -19,14 +19,15 @@ import { toast } from "sonner";
 export default function MaterialDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
   const router = useRouter();
-  const { materials, profiles, currentUser, claimMaterial } = useDemoStore();
+  const { materials, profiles, pickups, currentUser, claimMaterial } = useDemoStore();
   const material = materials.find(m => m.id === id);
 
   if (!material) {
     notFound();
   }
 
-  const generator = profiles.find(p => p.id === material.generator_id);
+  const pickup = pickups.find(p => p.id === material.pickup_id);
+  const generator = pickup ? profiles.find(p => p.id === pickup.user_id) : undefined;
   const isAvailable = material.status === 'Available';
   const isMyClaim = material.recycling_partner_id === currentUser?.id;
 
@@ -47,7 +48,7 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case 'Available': return 'success';
+      case 'Available': return 'default';
       case 'Claimed': return 'secondary';
       case 'Collected': return 'default';
       default: return 'outline';
@@ -120,7 +121,7 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
               <div className="sm:col-span-2">
                 <p className="text-sm font-medium text-text-secondary mb-1">Reported Condition</p>
                 <p className="text-text-primary bg-muted/50 p-3 rounded-lg border border-border-subtle">
-                  {material.condition}
+                  {pickup?.notes || "No additional notes provided."}
                 </p>
               </div>
             </div>
@@ -141,7 +142,7 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
                 </div>
                 <div>
                   <p className="font-medium text-text-primary">Listed on Marketplace</p>
-                  <p className="text-sm text-text-secondary">{new Date(material.created_at).toLocaleString()}</p>
+                  <p className="text-sm text-text-secondary">{new Date(material.available_at).toLocaleString()}</p>
                 </div>
               </div>
               
@@ -181,7 +182,7 @@ export default function MaterialDetailPage({ params }: { params: { id: string } 
               <MapPin className="w-5 h-5 text-primary" />
               Location
             </h2>
-            <p className="font-semibold text-text-primary mb-1">{material.location_area}</p>
+            <p className="font-semibold text-text-primary mb-1">{material.area}</p>
             {material.status === 'Claimed' && isMyClaim ? (
               <p className="text-sm text-text-secondary">Full address provided upon claim approval.</p>
             ) : (

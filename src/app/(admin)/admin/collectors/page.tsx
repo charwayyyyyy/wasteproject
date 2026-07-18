@@ -10,7 +10,8 @@ import {
   Search,
   MapPin,
   Phone,
-  UserCheck
+  UserCheck,
+  FilterX
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -66,9 +67,9 @@ export default function AdminCollectorsPage() {
     switch (status) {
       case 'Available': return 'default';
       case 'On Route': return 'secondary';
-      case 'At Capacity': return 'warning';
+      case 'At Capacity': return 'destructive';
       case 'Offline': return 'outline';
-      default: return 'default';
+      default: return 'outline';
     }
   };
 
@@ -186,14 +187,16 @@ export default function AdminCollectorsPage() {
             icon={Users}
             title="No collectors available"
             description="Collector profiles will appear here when they are added to the prototype network."
-            action={{ label: "Restore Demo Collectors", onClick: () => resetDemo() }}
+            actionLabel="Restore Demo Collectors"
+            onAction={() => resetDemo()}
           />
         ) : filteredCollectors.length === 0 ? (
           <EmptyState
             icon={FilterX}
             title="No collectors match these filters"
             description="Adjust or clear the filters to see more collectors."
-            action={{ label: "Clear Filters", onClick: () => { setStatusFilter("All"); setSearchQuery(""); } }}
+            actionLabel="Clear Filters"
+            onAction={() => { setStatusFilter("All"); setSearchQuery(""); }}
           />
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -262,7 +265,7 @@ export default function AdminCollectorsPage() {
           <div className="py-4 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Availability Status</label>
-              <Select value={newStatus} onValueChange={setNewStatus}>
+              <Select value={newStatus} onValueChange={(val) => setNewStatus(val as string)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose status" />
                 </SelectTrigger>

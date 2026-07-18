@@ -214,7 +214,7 @@ export const useDemoStore = create<DemoState>((set) => ({
     return result;
   },
 
-  reassignCollector: (pickupId, newCollectorId, _reason) => {
+  reassignCollector: (pickupId, newCollectorId) => {
     let result = { success: false, message: 'Pickup or new collector not found' };
     set((state) => {
       const pickup = state.pickups.find(p => p.id === pickupId);
