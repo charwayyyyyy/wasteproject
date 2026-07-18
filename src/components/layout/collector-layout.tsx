@@ -91,7 +91,7 @@ export function CollectorLayout({ children }: { children: React.ReactNode }) {
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col min-w-0 pb-[88px] md:pb-0">
           {/* Mobile Header (Safe Area Aware) */}
-          <header className="md:hidden bg-surface/80 backdrop-blur-xl border-b border-border-subtle p-4 flex items-center justify-between sticky top-0 z-20 pt-[max(env(safe-area-inset-top),16px)]">
+          <header className="md:hidden bg-surface border-b border-border-subtle p-4 flex items-center justify-between sticky top-0 z-20 pt-[max(env(safe-area-inset-top),16px)] shadow-sm">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
                 <span className="font-bold text-sm leading-none">E</span>
