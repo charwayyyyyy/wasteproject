@@ -13,12 +13,6 @@ export default function LandingPage() {
             <Link href="/"><Logo size={30} /></Link>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/how-it-works" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</Link>
-            <Link href="/disposal-points" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">Disposal points</Link>
-            <Link href="/presentation" className="text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-information"></span>
-              Pitch Mode
-            </Link>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="hidden md:inline-block text-[15px] font-medium text-text-secondary hover:text-text-primary transition-colors">
@@ -51,9 +45,6 @@ export default function LandingPage() {
                   <Link href="/login">
                     Launch Prototype <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-base font-medium bg-surface/50 backdrop-blur-sm border-border-strong w-full sm:w-auto" asChild>
-                  <Link href="/presentation">View Hackathon Pitch</Link>
                 </Button>
               </div>
             </div>
