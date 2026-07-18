@@ -6,12 +6,12 @@ This document outlines the current state of the EcoLoop prototype and details th
 
 ## 🟢 What We Have Implemented So Far
 
-The application has a functionally present core built with Next.js, Tailwind CSS, and a local Zustand store simulating the database. We recently completed a major **visual, architectural, and user experience rebuild** to elevate the product into a premium, iOS-inspired utility.
+The application has a functionally present core built with Next.js, Tailwind CSS, and a local Zustand store simulating the database. We recently completed a major **visual, architectural, and user experience rebuild** to elevate the product into a premium, iOS-inspired utility across all personas.
 
 ### 1. Core Architecture & UX
 - **Design System & Semantic Tokens**: A strict semantic CSS variable system (e.g., `--surface`, `--primary`, `--success`, `--background-secondary`) is active across the application.
 - **Responsive App Shells**: 
-  - Mobile-first bottom tabs for Resident, Collector, Admin, and Recycler layouts.
+  - Mobile-first bottom tabs for Resident, Collector, Admin, and Recycler layouts. All layouts now share a unified, polished, light-mode interface with consistent border styling and backdrop-blur effects.
   - Safe-area padding (`env(safe-area-inset-bottom)`) implemented for true native-app feel on mobile devices.
 - **Hydration Fixes**: `HydrationGate` component implemented to prevent the Zustand store from causing UI mismatch errors on first load.
 - **Empty States & Error States**: Reusable `EmptyState` and `ErrorState` components are integrated across dashboards and lists.
@@ -28,19 +28,24 @@ The application has a functionally present core built with Next.js, Tailwind CSS
 - **Dashboard (`/dashboard`)**: Clear information hierarchy prioritizing the active pickup with a prominent `HeroStatusCard`, followed by secondary actions.
 - **Pickup Requests (`/pickups/new`)**: A progressive, guided multi-step wizard to drastically reduce cognitive load when requesting collection.
 - **Status Tracking (`/pickups/[id]`)**: Residents can see status updates.
-- **Reporting (`/reports/new` & `/reports/[id]`)**: Form to report illegal dumping hotspots.
+- **Reporting (`/reports/new` & `/reports/[id]`)**: Form to report illegal dumping hotspots, **now including local photo evidence upload and preview**.
 - **Rewards (`/rewards`)**: Page showing EcoPoints balance and recent transactions.
 
 ### 4. Collector Experience
-- **Collector Dashboard (`/collector`)**: High-contrast, utility-focused "Active Route" interface with enlarged touch targets designed for field use.
+- **Collector Dashboard (`/collector`)**: "Active Route" interface redesigned to match the clean, unified iOS-style portal, featuring enlarged touch targets and easy status toggling.
 - **Requests Board (`/collector/requests`)**: An actionable board where collectors can claim nearby jobs.
 
 ### 5. Admin Experience
 - **Admin Dashboard (`/admin`)**: A clean, light-theme data shell with iOS-inspired KPI cards and lists (total pickups, active reports, network size).
 - **Report Management (`/admin/reports`)**: Interface to triage resident reports.
+- **Pickups Overview (`/admin/pickups`)**: Full tracking of active and completed pickups system-wide.
+- **Collector Management (`/admin/collectors`)**: Complete directory and analytics on collector performance.
 
 ### 6. Recycler Experience
 - **Marketplace (`/recycler`)**: Modern inventory grid displaying available sorted materials at disposal points, allowing recyclers to "Claim" them.
+- **Material Details (`/recycler/materials/[id]`)**: Detailed view of specific waste items, mapping generator profiles and pickup history.
+- **Claims System (`/recycler/claims`)**: Active tracking of currently claimed materials pending pickup.
+- **History (`/recycler/history`)**: Historical record of successfully collected materials.
 
 ---
 
@@ -54,13 +59,8 @@ While the core user flows and visual overhaul are complete, there are still miss
   - `/collector/requests/[id]`
   - `/collector/history`
 - **Admin Specifics**: 
-  - `/admin/pickups`
-  - `/admin/collectors`
   - `/admin/analytics`
   - `/admin/feedback`
-- **Recycler Specifics**: 
-  - `/recycler/claims`
-  - `/recycler/materials/[id]`
 
 ### 2. Interaction & State Handling
 - **Loading States (`loading.tsx`)**: Implement skeleton loaders for all routes to avoid white screen flashes.

@@ -3,7 +3,7 @@
 import { useDemoStore } from "@/store/demo-store";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Upload, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -18,6 +18,7 @@ export default function NewReportPage() {
   const [wasteType, setWasteType] = useState("");
   const [severity, setSeverity] = useState("");
   const [description, setDescription] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -25,6 +26,21 @@ export default function NewReportPage() {
   const [error, setError] = useState("");
 
   if (!currentUser) return null;
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image must be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -59,6 +75,7 @@ export default function NewReportPage() {
       severity: severity as "Low" | "Moderate" | "High" | "Urgent",
       status: 'Submitted',
       description: description,
+      image_url: imagePreview || undefined,
       drain_blocked: false,
       active_burning: false,
       verified: false,
@@ -175,6 +192,47 @@ export default function NewReportPage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium leading-none">Photo Evidence (Optional)</label>
+              <div className="flex items-center gap-4">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => document.getElementById('image-upload')?.click()}
+                  className="w-full sm:w-auto bg-muted/50"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Photo
+                </Button>
+                <Input 
+                  id="image-upload" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleImageChange}
+                />
+              </div>
+              {imagePreview && (
+                <div className="mt-4 relative rounded-md overflow-hidden border inline-block bg-muted/30">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={imagePreview} alt="Preview" className="max-h-[200px] object-contain rounded-md" />
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    size="icon" 
+                    className="absolute top-2 right-2 h-7 w-7 opacity-80 hover:opacity-100" 
+                    onClick={() => {
+                      setImagePreview(null);
+                      const input = document.getElementById('image-upload') as HTMLInputElement;
+                      if (input) input.value = '';
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 

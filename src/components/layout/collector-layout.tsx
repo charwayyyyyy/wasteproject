@@ -34,21 +34,20 @@ export function CollectorLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <HydrationGate>
-      {/* High contrast theme for collectors (simulated dark/high-legibility mode) */}
-      <div className="min-h-screen bg-surface-muted flex flex-col md:flex-row pb-[env(safe-area-inset-bottom)]">
+      <div className="min-h-screen bg-background-secondary flex flex-col md:flex-row pb-[env(safe-area-inset-bottom)]">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-[260px] border-r border-border-strong bg-text-primary min-h-screen sticky top-0 shadow-[1px_0_10px_rgba(0,0,0,0.1)] z-30">
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
+        <aside className="hidden md:flex flex-col w-[260px] border-r border-border-subtle bg-surface min-h-screen sticky top-0 shadow-[1px_0_10px_rgba(0,0,0,0.02)] z-30">
+          <div className="p-6 border-b border-border-subtle flex items-center justify-between">
             <Link href="/collector" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-success flex items-center justify-center text-white shadow-sm">
+              <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
                 <span className="font-bold text-lg leading-none">E</span>
               </div>
-              <span className="font-bold tracking-tight text-xl text-white">EcoLoop</span>
+              <span className="font-bold tracking-tight text-xl text-text-primary">EcoLoop</span>
             </Link>
           </div>
           
           <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto no-scrollbar">
-            <div className="px-3 pb-2 pt-1 text-xs font-semibold text-white/50 uppercase tracking-wider">Collector Portal</div>
+            <div className="px-3 pb-2 pt-1 text-xs font-semibold text-text-tertiary uppercase tracking-wider">Collector Portal</div>
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== '/collector' && pathname.startsWith(item.href));
               return (
@@ -58,32 +57,32 @@ export function CollectorLayout({ children }: { children: React.ReactNode }) {
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-medium transition-all duration-200",
                     isActive 
-                      ? "bg-success text-white shadow-sm" 
-                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                      ? "bg-primary text-primary-foreground shadow-sm" 
+                      : "text-text-secondary hover:bg-surface-muted hover:text-text-primary"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-white/50")} />
+                  <item.icon className={cn("h-5 w-5", isActive ? "text-primary-foreground" : "text-text-tertiary")} />
                   {item.name}
                 </Link>
               );
             })}
           </nav>
           
-          <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">
+          <div className="p-4 border-t border-border-subtle bg-surface/50 backdrop-blur-md">
             <div className="flex items-center gap-3 mb-4 px-3">
-              <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center text-success font-semibold border border-success/30">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold shadow-sm">
                 {currentUser.full_name.charAt(0)}
               </div>
               <div className="overflow-hidden">
-                <p className="font-medium text-white text-sm truncate">{currentUser.full_name}</p>
-                <p className="text-xs text-white/50 capitalize truncate flex items-center gap-1">
+                <p className="font-medium text-text-primary text-sm truncate">{currentUser.full_name}</p>
+                <p className="text-xs text-text-tertiary capitalize truncate flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span> Active
                 </p>
               </div>
             </div>
             <button 
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-medium text-white/60 hover:bg-danger/20 hover:text-danger transition-colors"
+              className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] font-medium text-text-secondary hover:bg-danger-background hover:text-danger transition-colors"
             >
               <LogOut className="h-5 w-5" />
               Logout
@@ -94,20 +93,12 @@ export function CollectorLayout({ children }: { children: React.ReactNode }) {
         {/* Main Content Area */}
         <main className="flex-1 flex flex-col min-w-0 pb-[88px] md:pb-0">
           {/* Mobile Header (Safe Area Aware) */}
-          <header className="md:hidden bg-text-primary text-white border-b border-white/10 p-4 flex items-center justify-between sticky top-0 z-20 pt-[max(env(safe-area-inset-top),16px)]">
+          <header className="md:hidden bg-surface/80 backdrop-blur-xl border-b border-border-subtle p-4 flex items-center justify-between sticky top-0 z-20 pt-[max(env(safe-area-inset-top),16px)]">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-success flex items-center justify-center text-white shadow-sm">
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
                 <span className="font-bold text-sm leading-none">E</span>
               </div>
-              <span className="font-semibold text-[17px] tracking-tight text-white">EcoLoop</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-[11px] font-medium px-2 py-0.5 bg-success/20 text-success border border-success/30 rounded-full uppercase tracking-wider flex items-center gap-1">
-                <span className="w-1 h-1 rounded-full bg-success"></span> Live
-              </span>
-              <button onClick={handleLogout} className="text-white/60 hover:text-danger transition-colors p-1">
-                <LogOut className="h-5 w-5" />
-              </button>
+              <span className="font-bold tracking-tight text-lg text-text-primary">EcoLoop</span>
             </div>
           </header>
           
